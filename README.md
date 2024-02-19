@@ -1,6 +1,4 @@
-# FashionFlare
-FashionFlare è uno store digitale per la vendita di vestiti online. 
-Ogni utente attraverso il suo profilo potrà sempre tener d'occhio il suo armadio con i suoi vestiti in vendita e visualizzare statistiche di vendita.
+# Memory Explorer
 
 1. Login e registrazione
 2. Profilo utente
