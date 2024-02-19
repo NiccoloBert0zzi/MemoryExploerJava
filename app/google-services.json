@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "687865565041",
+    "project_id": "memoryexplorer-2ef33",
+    "storage_bucket": "memoryexplorer-2ef33.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:687865565041:android:0199846d84eb909cda30d0",
+        "android_client_info": {
+          "package_name": "com.example.memoryexplorer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBC27EkIRvY0k5jahxKBCWMT46OeLWjd-I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:687865565041:android:5619a116746b4112da30d0",
+        "android_client_info": {
+          "package_name": "com.example.mobile_memoryexplorer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBC27EkIRvY0k5jahxKBCWMT46OeLWjd-I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
