@@ -12,6 +12,11 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
+        android:id="@+id/navigation_addmemory"
+        android:name="com.example.mobile_memoryexplorer.ui.addMemory.AddMemoryFragment"
+        android:label="@string/title_add_memory"
+        tools:layout="@layout/fragment_add_memory" />
+    <fragment
         android:id="@+id/navigation_dashboard"
         android:name="com.example.mobile_memoryexplorer.ui.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
