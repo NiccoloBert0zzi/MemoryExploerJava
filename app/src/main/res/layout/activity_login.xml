@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,6 +8,7 @@
     android:orientation="vertical"
     android:padding="16dp"
     tools:context=".Auth.Login">
+
 
     <androidx.cardview.widget.CardView
         android:id="@+id/logo"
@@ -50,8 +52,8 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Password"
         android:layout_marginTop="20dp"
+        android:hint="Password"
         app:helperText="Inserisci la password"
         app:helperTextTextColor="@color/indigo"
         app:layout_constraintEnd_toEndOf="parent"
@@ -76,14 +78,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/password_tv"
         tools:ignore="TextSizeCheck" />
+
     <Button
         android:id="@+id/login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="Accedi"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/register"
-        android:layout_marginTop="20dp"/>
-
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/register" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -18,18 +18,20 @@ import android.widget.Toast;
 
 import com.example.mobile_memoryexplorer.MainActivity;
 import com.example.mobile_memoryexplorer.databinding.ActivityRegisterBinding;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 
 public class Register extends AppCompatActivity {
   private FirebaseAuth auth;
   private ActivityRegisterBinding binding;
   private Uri imageURI;
-  StorageReference storageReference;
+  FirebaseStorage storage = FirebaseStorage.getInstance();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -38,36 +40,43 @@ public class Register extends AppCompatActivity {
     setContentView(binding.getRoot());
 
     auth = FirebaseAuth.getInstance();
-    storageReference = FirebaseStorage.getInstance().getReference();
     binding.register.setOnClickListener(v -> {
-      //load image on storage
-      uploadImage(imageURI);
       String email = binding.email.getText().toString();
       String password = binding.passsword.getText().toString();
-      auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-          // Sign in success, update UI
-          Log.d(TAG, "createUserWithEmail:success");
-          UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-              .setDisplayName(binding.name.getText().toString())
-              .setPhotoUri(imageURI)
-              .build();
-          FirebaseUser user = auth.getCurrentUser();
-          user.updateProfile(profileUpdates);
-          Intent homePage = new Intent(this, MainActivity.class);
-          homePage.putExtra("user", user);
-          startActivity(homePage);
-        } else {
-          // If sign in fails, display a message to the user.
-          Log.w(TAG, "createUserWithEmail:failure", task.getException());
-          Toast.makeText(this, "Authentication failed. " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+      //load image on storage
+      StorageReference ref = storage.getReference("Images/" + email + "/" + "profileImage");
+      ref.putFile(imageURI).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        @Override
+        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+          Toast.makeText(Register.this, "Images added", Toast.LENGTH_SHORT).show();
+          auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+              // Sign in success, update UI
+              storage.getReference("Images/" + email + "/profileImage").getDownloadUrl().addOnSuccessListener(uri -> {
+                imageURI = uri;
+                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                    .setDisplayName(binding.name.getText().toString())
+                    .setPhotoUri(imageURI)
+                    .build();
+                FirebaseUser user = auth.getCurrentUser();
+                user.updateProfile(profileUpdates);
+                Intent homePage = new Intent(Register.this, MainActivity.class);
+                homePage.putExtra("user", user);
+                startActivity(homePage);
+              });
+              Log.d(TAG, "createUserWithEmail:success");
+            } else {
+              // If sign in fails, display a message to the user.
+              Log.w(TAG, "createUserWithEmail:failure", task.getException());
+              Toast.makeText(Register.this, "Authentication failed. " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+            }
+          });
         }
+      }).addOnFailureListener(e -> {
+        Toast.makeText(Register.this, "Images not added", Toast.LENGTH_SHORT).show();
       });
     });
-
     binding.login.setOnClickListener(v -> startActivity(new Intent(this, Login.class)));
-
-
     binding.profileImage.setOnClickListener(v -> {
       Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
       someActivityResultLauncher.launch(intent);
@@ -85,10 +94,5 @@ public class Register extends AppCompatActivity {
           }
         }
       });
-
-  private void uploadImage(Uri file) {
-    StorageReference ref = storageReference.child("Images/" + binding.email.getText().toString() + "/" + "profileImage");
-    ref.putFile(file).addOnSuccessListener(taskSnapshot -> Toast.makeText(Register.this, "Image Uploaded!!", Toast.LENGTH_SHORT).show()).addOnFailureListener(e -> Toast.makeText(Register.this, "Failed!" + e.getMessage(), Toast.LENGTH_SHORT).show());
-  }
 
 }
