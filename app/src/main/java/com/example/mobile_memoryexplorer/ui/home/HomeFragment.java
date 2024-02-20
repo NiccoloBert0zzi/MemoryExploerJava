@@ -1,7 +1,5 @@
 package com.example.mobile_memoryexplorer.ui.home;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +12,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.example.mobile_memoryexplorer.MemoriesListAdapter;
 import com.example.mobile_memoryexplorer.Memory;
+import com.example.mobile_memoryexplorer.MySharedData;
 import com.example.mobile_memoryexplorer.databinding.FragmentHomeBinding;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,15 +28,15 @@ public class HomeFragment extends Fragment {
   private FragmentHomeBinding binding;
   private final List<Memory> list = new ArrayList<>();
   String email;
-  SharedPreferences sharedpreferences;
   private DatabaseReference dbRef;
+  MySharedData mySharedData;
 
   public View onCreateView(@NonNull LayoutInflater inflater,
                            ViewGroup container, Bundle savedInstanceState) {
     binding = FragmentHomeBinding.inflate(inflater, container, false);
     View root = binding.getRoot();
-    sharedpreferences = getContext().getSharedPreferences("SHARED_PREFS", Context.MODE_PRIVATE);
-    email = sharedpreferences.getString("email", null);
+    mySharedData = new MySharedData(this.getContext());
+    email = MySharedData.getEmail();
     dbRef = FirebaseDatabase.getInstance().getReference("memories");
     prepareItemData();
     return root;

@@ -1,9 +1,15 @@
 package com.example.mobile_memoryexplorer;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
+import com.example.mobile_memoryexplorer.Auth.Login;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -34,4 +40,24 @@ public class MainActivity extends AppCompatActivity {
     NavigationUI.setupWithNavController(binding.navView, navController);
   }
 
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.menu, menu);
+    return super.onCreateOptionsMenu(menu);
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    if (item.getItemId() == R.id.logout) {
+      MySharedData mySharedData = new MySharedData(this);
+      mySharedData.setSharedpreferences("remember", "false");
+      finish();
+      //start login activity
+      Intent loginpage= new Intent(this, Login.class);
+      loginpage.setFlags(loginpage.getFlags()| Intent.FLAG_ACTIVITY_NO_HISTORY);
+      startActivity(loginpage);
+    }
+    return super.onOptionsItemSelected(item);
+  }
 }
