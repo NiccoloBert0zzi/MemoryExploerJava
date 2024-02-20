@@ -13,6 +13,9 @@
         android:theme="@style/Theme.Mobile_MemoryExplorer"
         tools:targetApi="31">
         <activity
+            android:name=".SingleMemory"
+            android:exported="false" />
+        <activity
             android:name=".Auth.Register"
             android:exported="false" />
         <activity

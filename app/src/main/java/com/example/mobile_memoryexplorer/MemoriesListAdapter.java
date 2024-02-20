@@ -1,7 +1,11 @@
 package com.example.mobile_memoryexplorer;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +23,7 @@ import java.util.Locale;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.mobile_memoryexplorer.Auth.Login;
 
 public class MemoriesListAdapter extends RecyclerView.Adapter<MemoriesListAdapter.MyViewHolder> {
 
@@ -68,12 +73,19 @@ public class MemoriesListAdapter extends RecyclerView.Adapter<MemoriesListAdapte
       throw new RuntimeException(e);
     }
     holder.title_tv.setText(list.get(position).getTitle());
-
+    holder.image.setTag(list.get(position).getId());
     Glide.with(context)
         .load(Uri.parse(list.get(position).getImage()))
         .into(holder.image);
 
-    holder.itemView.setOnClickListener(view -> Toast.makeText(context, "Android Version " + holder.title_tv.getText() + ": Clicked", Toast.LENGTH_LONG).show());
+    holder.itemView.setOnClickListener(view -> {
+          Intent singleMemory = new Intent(context, SingleMemory.class);
+          Bundle b = new Bundle();
+          b.putString("id", holder.image.getTag().toString()); //Your id
+          singleMemory.putExtras(b); //Put your id to your next Intent
+          context.startActivity(singleMemory);
+        }
+    );
   }
 
   @Override
