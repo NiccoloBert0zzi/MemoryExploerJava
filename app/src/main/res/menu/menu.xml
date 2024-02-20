@@ -4,5 +4,6 @@
     <item
         android:id="@+id/logout"
         app:showAsAction="ifRoom"
+        android:fontFamily="@font/plusjakartasans_regular"
         android:title="@string/LogOut" />
 </menu>

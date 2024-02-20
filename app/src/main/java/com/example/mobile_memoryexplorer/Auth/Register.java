@@ -6,6 +6,7 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -17,6 +18,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.mobile_memoryexplorer.MainActivity;
+import com.example.mobile_memoryexplorer.R;
 import com.example.mobile_memoryexplorer.databinding.ActivityRegisterBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,6 +40,8 @@ public class Register extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     binding = ActivityRegisterBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
+    getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+    getSupportActionBar().setCustomView(R.layout.action_bar_layout);
 
     auth = FirebaseAuth.getInstance();
     binding.register.setOnClickListener(v -> {
