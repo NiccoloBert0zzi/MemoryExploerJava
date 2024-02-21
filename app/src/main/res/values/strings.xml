@@ -6,4 +6,5 @@
     <string name="LogOut">Log out</string>
     <string name="profile_image">profile image</string>
     <string name="statistics">Statistiche</string>
+    <string name="select_filter">Seleziona un filtro</string>
 </resources>
