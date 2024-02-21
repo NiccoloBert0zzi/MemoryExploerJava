@@ -53,7 +53,8 @@ public class SingleMemory extends AppCompatActivity {
             Date date = sdf.parse(m.getDate());
             calendar.setTime(date);
             int year = calendar.get(Calendar.YEAR);
-            binding.creatorDate.setText(m.getCreator()+"-"+String.valueOf(year));
+            String placeholder = m.getCreator()+"-"+ year;
+            binding.creatorDate.setText(placeholder);
           } catch (ParseException e) {
             throw new RuntimeException(e);
           }

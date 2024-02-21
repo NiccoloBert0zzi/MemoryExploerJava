@@ -44,6 +44,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.navigation:navigation-fragment:2.7.7")
+    implementation ("androidx.room:room-runtime:2.2.5")
+    annotationProcessor("androidx.room:room-compiler:2.2.5")
     implementation("androidx.navigation:navigation-ui:2.7.7")
     implementation("com.google.firebase:firebase-auth:22.3.1")
     implementation("com.google.firebase:firebase-storage:20.3.0")

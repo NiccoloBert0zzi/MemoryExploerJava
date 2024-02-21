@@ -17,7 +17,10 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.mobile_memoryexplorer.Database.AppDatabase;
 import com.example.mobile_memoryexplorer.MainActivity;
+import com.example.mobile_memoryexplorer.Database.Profile;
+import com.example.mobile_memoryexplorer.MySharedData;
 import com.example.mobile_memoryexplorer.R;
 import com.example.mobile_memoryexplorer.databinding.ActivityRegisterBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -34,6 +37,7 @@ public class Register extends AppCompatActivity {
   private ActivityRegisterBinding binding;
   private Uri imageURI;
   FirebaseStorage storage = FirebaseStorage.getInstance();
+  MySharedData mySharedData;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +46,7 @@ public class Register extends AppCompatActivity {
     setContentView(binding.getRoot());
     getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
     getSupportActionBar().setCustomView(R.layout.action_bar_layout);
+    mySharedData = new MySharedData(this);
 
     auth = FirebaseAuth.getInstance();
     binding.register.setOnClickListener(v -> {
@@ -58,14 +63,11 @@ public class Register extends AppCompatActivity {
               // Sign in success, update UI
               storage.getReference("Images/" + email + "/profileImage").getDownloadUrl().addOnSuccessListener(uri -> {
                 imageURI = uri;
-                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                    .setDisplayName(binding.name.getText().toString())
-                    .setPhotoUri(imageURI)
-                    .build();
-                FirebaseUser user = auth.getCurrentUser();
-                user.updateProfile(profileUpdates);
+                AppDatabase appDb = AppDatabase.getInstance(Register.this);
+                Profile profile = new Profile(email, binding.name.getText().toString(), binding.surname.getText().toString(), binding.address.getText().toString(), binding.birthdate.getText().toString(),imageURI.toString());
+                appDb.profileDao().insert(profile);
+                mySharedData.setSharedpreferences("email", email);
                 Intent homePage = new Intent(Register.this, MainActivity.class);
-                homePage.putExtra("user", user);
                 startActivity(homePage);
               });
               Log.d(TAG, "createUserWithEmail:success");

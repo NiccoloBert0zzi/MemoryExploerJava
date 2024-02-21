@@ -1,6 +1,5 @@
 package com.example.mobile_memoryexplorer;
 
-import static androidx.core.content.ContextCompat.startActivity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -20,10 +18,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.mobile_memoryexplorer.Auth.Login;
 
 public class MemoriesListAdapter extends RecyclerView.Adapter<MemoriesListAdapter.MyViewHolder> {
 
@@ -53,6 +51,7 @@ public class MemoriesListAdapter extends RecyclerView.Adapter<MemoriesListAdapte
     }
   }
 
+  @NonNull
   @Override
   public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
     View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_item, parent, false);

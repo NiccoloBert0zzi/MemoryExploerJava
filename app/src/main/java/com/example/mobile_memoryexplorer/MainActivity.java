@@ -7,7 +7,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.example.mobile_memoryexplorer.Auth.Login;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -21,21 +20,18 @@ import com.example.mobile_memoryexplorer.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
-  private ActivityMainBinding binding;
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    binding = ActivityMainBinding.inflate(getLayoutInflater());
+    com.example.mobile_memoryexplorer.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
     getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
     getSupportActionBar().setCustomView(R.layout.action_bar_layout);
-    BottomNavigationView navView = findViewById(R.id.nav_view);
     // Passing each menu ID as a set of Ids because each
     // menu should be considered as top level destinations.
     AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-        R.id.navigation_home,R.id.navigation_addmemory, R.id.navigation_dashboard, R.id.navigation_notifications)
+        R.id.navigation_home,R.id.navigation_addmemory, R.id.navigation_profile, R.id.navigation_statistics)
         .build();
     NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
     NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
@@ -51,15 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
   @Override
   public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-    if (item.getItemId() == R.id.logout) {
-      MySharedData mySharedData = new MySharedData(this);
-      mySharedData.setSharedpreferences("remember", "false");
-      finish();
-      //start login activity
-      Intent loginpage= new Intent(this, Login.class);
-      loginpage.setFlags(loginpage.getFlags()| Intent.FLAG_ACTIVITY_NO_HISTORY);
-      startActivity(loginpage);
-    }
+    //TODO notification
     return super.onOptionsItemSelected(item);
   }
 }

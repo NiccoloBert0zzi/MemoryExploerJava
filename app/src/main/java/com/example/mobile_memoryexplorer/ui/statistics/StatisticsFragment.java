@@ -1,5 +1,7 @@
-package com.example.mobile_memoryexplorer.ui.home;
+package com.example.mobile_memoryexplorer.ui.statistics;
 
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,36 +10,38 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 
-import com.example.mobile_memoryexplorer.MemoriesListAdapter;
 import com.example.mobile_memoryexplorer.Memory;
 import com.example.mobile_memoryexplorer.MySharedData;
-import com.example.mobile_memoryexplorer.databinding.FragmentHomeBinding;
+import com.example.mobile_memoryexplorer.databinding.FragmentStatisticsBinding;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-public class HomeFragment extends Fragment {
+public class StatisticsFragment extends Fragment {
 
-  private FragmentHomeBinding binding;
+  private FragmentStatisticsBinding binding;
+  private DatabaseReference dbRef;
   private final List<Memory> list = new ArrayList<>();
   String email;
-  private DatabaseReference dbRef;
   MySharedData mySharedData;
 
   public View onCreateView(@NonNull LayoutInflater inflater,
                            ViewGroup container, Bundle savedInstanceState) {
-    binding = FragmentHomeBinding.inflate(inflater, container, false);
+
+    binding = FragmentStatisticsBinding.inflate(inflater, container, false);
     View root = binding.getRoot();
+
+    dbRef = FirebaseDatabase.getInstance().getReference("memories");
     mySharedData = new MySharedData(getContext());
     email = MySharedData.getEmail();
-    dbRef = FirebaseDatabase.getInstance().getReference("memories");
     prepareItemData();
     return root;
   }
@@ -55,17 +59,21 @@ public class HomeFragment extends Fragment {
         list.clear();
         for (DataSnapshot memorySnapshot : snapshot.getChildren()) {
           Memory m = memorySnapshot.getValue(Memory.class);
-          if (!m.getCreator().equals(email))
+          if (m.getCreator().equals(email))
             list.add(m);
         }
         if (list.isEmpty()) {
           Toast.makeText(getContext(), "No memories found", Toast.LENGTH_SHORT).show();
         } else {
-          if (binding != null) {
-            //set GridLayoutManager in recyclerView and show items in grid with two columns
-            binding.recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-            //set adapter ItemAdapter in recyclerView
-            binding.recyclerView.setAdapter(new MemoriesListAdapter(list, getContext()));
+          Geocoder gcd = new Geocoder(getContext(), Locale.getDefault());
+          List<Address> addresses;
+          try {
+            addresses = gcd.getFromLocation(Double.parseDouble(list.get(1).getLatitude()), Double.parseDouble(list.get(1).getLongitude()), 1);
+            if (addresses.size() > 0) {
+              binding.textNotifications.setText(addresses.get(0).getLocality());
+            }
+          } catch (IOException e) {
+            throw new RuntimeException(e);
           }
         }
       }

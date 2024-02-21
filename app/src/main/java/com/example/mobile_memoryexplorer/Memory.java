@@ -1,15 +1,15 @@
 package com.example.mobile_memoryexplorer;
 
 public class Memory {
-  public Memory(String id, String creator, String title, String description, String date, String location, String image) {
+  public Memory(String id, String creator, String title, String description, String date, String latitude, String longitude, String image) {
     this.title = title;
     this.description = description;
     this.date = date;
-    this.location = location;
+    this.latitude = latitude;
+    this.longitude = longitude;
     this.image = image;
     this.creator = creator;
     this.id = id;
-
   }
 
   public Memory() {
@@ -35,8 +35,12 @@ public class Memory {
     return date;
   }
 
-  public String getLocation() {
-    return location;
+  public String getLatitude() {
+    return latitude;
+  }
+
+  public String getLongitude() {
+    return longitude;
   }
 
   public String getImage() {
@@ -48,7 +52,8 @@ public class Memory {
   private String title;
   private String description;
   private String date;
-  private String location;
+  private String latitude;
+  private String longitude;
   private String image;
 
   @Override
@@ -57,7 +62,8 @@ public class Memory {
         "title='" + title + '\'' +
         ", description='" + description + '\'' +
         ", date='" + date + '\'' +
-        ", location='" + location + '\'' +
+        ", latitude='" + latitude + '\'' +
+        ", longitude='" + longitude + '\'' +
         ", image='" + image + '\'' +
         ", creator='" + creator + '\'' +
         ", id='" + id + '\'' +

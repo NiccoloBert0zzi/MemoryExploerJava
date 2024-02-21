@@ -17,14 +17,14 @@
         android:label="@string/title_add_memory"
         tools:layout="@layout/fragment_add_memory" />
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.example.mobile_memoryexplorer.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_profile"
+        android:name="com.example.mobile_memoryexplorer.ui.profile.ProfileFragment"
+        android:label="@string/title_profile"
+        tools:layout="@layout/fragment_profile" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.mobile_memoryexplorer.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_statistics"
+        android:name="com.example.mobile_memoryexplorer.ui.statistics.StatisticsFragment"
+        android:label="@string/statistics"
+        tools:layout="@layout/fragment_statistics" />
 </navigation>

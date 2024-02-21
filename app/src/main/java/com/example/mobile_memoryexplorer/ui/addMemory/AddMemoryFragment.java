@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 
 import com.example.mobile_memoryexplorer.MainActivity;
 import com.example.mobile_memoryexplorer.Memory;
+import com.example.mobile_memoryexplorer.MySharedData;
 import com.example.mobile_memoryexplorer.databinding.FragmentAddMemoryBinding;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -36,7 +37,7 @@ public class AddMemoryFragment extends Fragment {
   private FragmentAddMemoryBinding binding;
   private Uri imageURI;
   FirebaseDatabase database = FirebaseDatabase.getInstance();
-  SharedPreferences sharedpreferences;
+  MySharedData mySharedData;
   String email;
   FirebaseStorage storage = FirebaseStorage.getInstance();
 
@@ -45,8 +46,8 @@ public class AddMemoryFragment extends Fragment {
 
     binding = FragmentAddMemoryBinding.inflate(inflater, container, false);
     View root = binding.getRoot();
-    sharedpreferences = getContext().getSharedPreferences("SHARED_PREFS", Context.MODE_PRIVATE);
-    email = sharedpreferences.getString("email", null);
+    mySharedData = new MySharedData(getContext());
+    email = MySharedData.getEmail();
     //todo defalut image
     binding.addMemory.setOnClickListener(v -> {
 
@@ -59,7 +60,8 @@ public class AddMemoryFragment extends Fragment {
               .getDownloadUrl().addOnSuccessListener(uri -> {
                 imageURI = uri;
                 SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.ITALIAN);
-                Memory mem = new Memory(id, email, binding.title.getText().toString(), binding.description.getText().toString(), sdf.format(new Date()), "", imageURI.toString());
+                //todo add location
+                Memory mem = new Memory(id, email, binding.title.getText().toString(), binding.description.getText().toString(), sdf.format(new Date()), "","", imageURI.toString());
                 finalMemoryRef.setValue(mem);
                 Toast.makeText(getContext(), "Memory added", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getContext(), MainActivity.class);

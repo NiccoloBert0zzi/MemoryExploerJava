@@ -14,7 +14,8 @@
         android:scaleType="centerCrop"
         android:layout_height="200dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        android:contentDescription="memory image" />
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
