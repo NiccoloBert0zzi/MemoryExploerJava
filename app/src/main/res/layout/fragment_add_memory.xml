@@ -10,7 +10,15 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
+        <TextView
+            android:id="@+id/textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Aggiungi un ricordo"
+            android:textSize="20sp"
+            android:textColor="@color/indigo"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
         <EditText
             android:id="@+id/title"
             android:layout_width="match_parent"
@@ -20,7 +28,7 @@
             android:padding="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textview"
             android:importantForAutofill="no" />
 
         <ImageView
@@ -29,10 +37,9 @@
             android:layout_height="200dp"
             android:layout_marginTop="20dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title"
-            android:src="@drawable/lake"
-            android:contentDescription="memory_image"/>
+            android:contentDescription="memory_image"
+            android:src="@drawable/lake"/>
 
         <EditText
             android:id="@+id/description"

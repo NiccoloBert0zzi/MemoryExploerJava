@@ -41,7 +41,7 @@ public class StatisticsFragment extends Fragment {
   String email;
   MySharedData mySharedData;
   Map<String, Integer> locations = new HashMap<>();
-  String[] filter = {"Italia", "Mondo", "Europa", "Asia", "Africa", "Oceania", "America", "Antartide"};
+  List<String> filter = new ArrayList<>();
   ArrayAdapter<String> adapterItem;
   String filter_chosen;
 
@@ -50,11 +50,12 @@ public class StatisticsFragment extends Fragment {
 
     binding = FragmentStatisticsBinding.inflate(inflater, container, false);
     View root = binding.getRoot();
-    adapterItem = new ArrayAdapter<>(getContext(), R.layout.filter_list_item, filter);
-    binding.autoCompleteTextView.setAdapter(adapterItem);
+
     dbRef = FirebaseDatabase.getInstance().getReference("memories");
     mySharedData = new MySharedData(getContext());
     email = MySharedData.getEmail();
+
+    filter.add("Mondo");
     prepareItemData();
 
     binding.autoCompleteTextView.setOnItemClickListener((parent, view, position, id) -> {
@@ -71,6 +72,7 @@ public class StatisticsFragment extends Fragment {
     binding = null;
   }
 
+  //scarica dati dal db e prende le memories dell'utente
   public void prepareItemData() {
     dbRef.addValueEventListener(new ValueEventListener() {
       @Override
@@ -83,10 +85,9 @@ public class StatisticsFragment extends Fragment {
         }
         if (list.isEmpty()) {
           Toast.makeText(getContext(), "No memories found", Toast.LENGTH_SHORT).show();
-        } else if(filter_chosen != null && !filter_chosen.isEmpty()) {
+        } else {
           downloadData();
-        } else
-          Toast.makeText(getContext(), "Seleziona un filtro", Toast.LENGTH_SHORT).show();
+        }
       }
 
       @Override
@@ -98,34 +99,44 @@ public class StatisticsFragment extends Fragment {
     });
 
   }
+
+  //scarica le location e li mette in una mappa con la chiave citta e il valore numero di votle visitata
   private void downloadData() {
     for (Memory m : list) {
       String key = getlocation(m.getLatitude(), m.getLongitude());
-      if(key == null)
+      if (key == null)
         continue;
-      if (locations.containsKey(key)) {
-        locations.put(key, locations.get(key) + 1);
-      } else {
-        locations.put(key, 1);
+      if (!filter.contains(key) && filter_chosen == null) {
+        filter.add(key);
       }
+      if (filter_chosen != null && !filter_chosen.isEmpty()) {
+        if (locations.containsKey(key)) {
+          locations.put(key, locations.get(key) + 1);
+        } else {
+          locations.put(key, 1);
+        }
+      }
+      setupBarChart();
     }
-    setupBarChart();
+    adapterItem = new ArrayAdapter<>(getContext(), R.layout.filter_list_item, filter);
+    binding.autoCompleteTextView.setAdapter(adapterItem);
   }
+
+  //ritorna la citta in base alla latitudine e longitudine
   private String getlocation(String lat, String lon) {
     Geocoder gcd = new Geocoder(getContext(), Locale.getDefault());
     List<Address> addresses;
     try {
       addresses = gcd.getFromLocation(Double.parseDouble(lat), Double.parseDouble(lon), 1);
       if (addresses.size() > 0) {
-        switch (filter_chosen) {
-          case "Italia": {
-            if (addresses.get(0).getCountryName().equals("Italia")) {
-              return addresses.get(0).getAdminArea();
-            }
-            return null;
-          }
-          case "Mondo":
+        if (filter_chosen != null && !filter_chosen.isEmpty()) {
+          if (filter_chosen.equals("Mondo")) {
             return addresses.get(0).getCountryName();
+          } else if (addresses.get(0).getCountryName().equals(filter_chosen)) {
+            return addresses.get(0).getAdminArea();
+          }
+        } else {
+          return addresses.get(0).getCountryName();
         }
       }
     } catch (IOException e) {
@@ -133,6 +144,7 @@ public class StatisticsFragment extends Fragment {
     }
     return null;
   }
+
   private void setupBarChart() {
     binding.barChart.clear();
     ArrayList<PieEntry> yValues = new ArrayList<>();
@@ -148,6 +160,7 @@ public class StatisticsFragment extends Fragment {
     binding.barChart.setData(data);
 
     binding.barChart.getDescription().setEnabled(false);
+    binding.barChart.getLegend().setEnabled(false);
     binding.barChart.animateY(1000);
     binding.barChart.invalidate();
   }
