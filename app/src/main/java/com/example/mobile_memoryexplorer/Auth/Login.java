@@ -12,12 +12,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.mobile_memoryexplorer.MainActivity;
@@ -36,7 +41,6 @@ public class Login extends AppCompatActivity {
   private FirebaseAuth auth;
   private ActivityLoginBinding binding;
   MySharedData mySharedData;
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -55,6 +59,7 @@ public class Login extends AppCompatActivity {
       startActivity(homePage);
     }
     auth = FirebaseAuth.getInstance();
+    isLocationPermissionGranted();
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
       BiometricManager biometricManager = BiometricManager.from(this);
       switch (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG | BiometricManager.Authenticators.DEVICE_CREDENTIAL)) {
@@ -121,18 +126,26 @@ public class Login extends AppCompatActivity {
     }
     binding.login.setOnClickListener(v ->
     {
+      binding.progressBar.setVisibility(RelativeLayout.VISIBLE);
+      getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+          WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
       String email = binding.email.getText().toString();
       String password = binding.passsword.getText().toString();
       auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
         if (task.isSuccessful()) {
           // Sign in success, update UI with the signed-in user's information
           mySharedData.setSharedpreferences("email", email);
+          binding.progressBar.setVisibility(View.GONE);
+          getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
           Intent homePage = new Intent(this, MainActivity.class);
           homePage.setFlags(homePage.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
           startActivity(homePage);
         } else {
           // If sign in fails, display a message to the user.
           Log.w(TAG, "signInWithEmail:failure", task.getException());
+          binding.progressBar.setVisibility(View.GONE);
+          getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
           Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show();
         }
       });
@@ -160,4 +173,27 @@ public class Login extends AppCompatActivity {
           Intent data = result.getData();
         }
       });
+  private boolean isLocationPermissionGranted() {
+    if (ActivityCompat.checkSelfPermission(
+        this,
+        android.Manifest.permission.ACCESS_COARSE_LOCATION
+    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+        this,
+        android.Manifest.permission.ACCESS_FINE_LOCATION
+    ) != PackageManager.PERMISSION_GRANTED
+    ) {
+      int requestcode = 1;
+      ActivityCompat.requestPermissions(
+          this,
+          new String[]{
+              android.Manifest.permission.ACCESS_FINE_LOCATION,
+              android.Manifest.permission.ACCESS_COARSE_LOCATION
+          },
+          requestcode
+      );
+      return false;
+    } else {
+      return true;
+    }
+  }
 }

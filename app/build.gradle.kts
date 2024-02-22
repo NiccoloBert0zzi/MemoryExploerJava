@@ -50,7 +50,6 @@ dependencies {
     implementation("com.google.firebase:firebase-storage:20.3.0")
     implementation("com.google.firebase:firebase-database:20.3.0")
     implementation("com.github.bumptech.glide:glide:4.12.0")
-    implementation ("com.google.android.gms:play-services-maps:18.2.0")
     implementation ("com.google.android.gms:play-services-location:21.1.0")
     implementation ("androidx.preference:preference:1.2.1")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")

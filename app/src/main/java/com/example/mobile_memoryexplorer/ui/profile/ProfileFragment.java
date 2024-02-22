@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -63,6 +65,10 @@ public class ProfileFragment extends Fragment {
       }
     });
 
+    binding.progressBar.setVisibility(RelativeLayout.VISIBLE);
+    getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
     dbRef = FirebaseDatabase.getInstance().getReference("memories");
     prepareItemData();
     //Set view
@@ -79,6 +85,8 @@ public class ProfileFragment extends Fragment {
         //todo set default image in drawable
         binding.profileImage.setImageResource(R.drawable.ic_baseline_account_circle_24);
       }
+      binding.progressBar.setVisibility(View.GONE);
+      getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     });
     //logout
     binding.buttonLogout.setOnClickListener(v -> {

@@ -15,6 +15,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.mobile_memoryexplorer.Database.AppDatabase;
@@ -23,13 +26,9 @@ import com.example.mobile_memoryexplorer.Database.Profile;
 import com.example.mobile_memoryexplorer.MySharedData;
 import com.example.mobile_memoryexplorer.R;
 import com.example.mobile_memoryexplorer.databinding.ActivityRegisterBinding;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 
 public class Register extends AppCompatActivity {
@@ -50,35 +49,43 @@ public class Register extends AppCompatActivity {
 
     auth = FirebaseAuth.getInstance();
     binding.register.setOnClickListener(v -> {
+
+      binding.progressBar.setVisibility(RelativeLayout.VISIBLE);
+      getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+          WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
       String email = binding.email.getText().toString();
       String password = binding.passsword.getText().toString();
       //load image on storage
       StorageReference ref = storage.getReference("Images/" + email + "/" + "profileImage");
-      ref.putFile(imageURI).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-        @Override
-        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-          Toast.makeText(Register.this, "Images added", Toast.LENGTH_SHORT).show();
-          auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-              // Sign in success, update UI
-              storage.getReference("Images/" + email + "/profileImage").getDownloadUrl().addOnSuccessListener(uri -> {
-                imageURI = uri;
-                AppDatabase appDb = AppDatabase.getInstance(Register.this);
-                Profile profile = new Profile(email, binding.name.getText().toString(), binding.surname.getText().toString(), binding.address.getText().toString(), binding.birthdate.getText().toString(),imageURI.toString());
-                appDb.profileDao().insert(profile);
-                mySharedData.setSharedpreferences("email", email);
-                Intent homePage = new Intent(Register.this, MainActivity.class);
-                startActivity(homePage);
-              });
+      ref.putFile(imageURI).addOnSuccessListener(taskSnapshot -> {
+        Toast.makeText(Register.this, "Images added", Toast.LENGTH_SHORT).show();
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+          if (task.isSuccessful()) {
+            // Sign in success, update UI
+            storage.getReference("Images/" + email + "/profileImage").getDownloadUrl().addOnSuccessListener(uri -> {
+              imageURI = uri;
+              AppDatabase appDb = AppDatabase.getInstance(Register.this);
+              Profile profile = new Profile(email, binding.name.getText().toString(), binding.surname.getText().toString(), binding.address.getText().toString(), binding.birthdate.getText().toString(), imageURI.toString());
+              appDb.profileDao().insert(profile);
+              mySharedData.setSharedpreferences("email", email);
               Log.d(TAG, "createUserWithEmail:success");
-            } else {
-              // If sign in fails, display a message to the user.
-              Log.w(TAG, "createUserWithEmail:failure", task.getException());
-              Toast.makeText(Register.this, "Authentication failed. " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-            }
-          });
-        }
+              binding.progressBar.setVisibility(View.GONE);
+              getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+              Intent homePage = new Intent(Register.this, MainActivity.class);
+              startActivity(homePage);
+            });
+          } else {
+            binding.progressBar.setVisibility(View.GONE);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            // If sign in fails, display a message to the user.
+            Log.w(TAG, "createUserWithEmail:failure", task.getException());
+            Toast.makeText(Register.this, "Authentication failed. " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+          }
+        });
       }).addOnFailureListener(e -> {
+        binding.progressBar.setVisibility(View.GONE);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         Toast.makeText(Register.this, "Images not added", Toast.LENGTH_SHORT).show();
       });
     });
