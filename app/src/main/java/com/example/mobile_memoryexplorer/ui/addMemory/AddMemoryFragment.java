@@ -50,7 +50,7 @@ public class AddMemoryFragment extends Fragment {
     email = MySharedData.getEmail();
     //todo defalut image
     binding.addMemory.setOnClickListener(v -> {
-
+    //TODO dialog on loading
       DatabaseReference memoryRef = database.getReference("memories/");
       String id = memoryRef.push().getKey();
       StorageReference ref = storage.getReference("Images/" + email + "/" + "memoriesImage/" + id);

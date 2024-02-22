@@ -14,23 +14,24 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/chosen_image"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginTop="32dp"
-            app:cardCornerRadius="150dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/profileImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/profile_image"
-                app:srcCompat="@drawable/empty_user" />
-        </androidx.cardview.widget.CardView>
+        <xyz.schwaab.avvylib.AvatarView
+            android:id="@id/profileImage"
+            android:src="@drawable/empty_user"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            app:avvy_border_color="@color/white"
+            app:avvy_border_highlight_color="@color/white"
+            app:avvy_border_highlight_color_end="@color/white"
+            app:avvy_border_thickness="2dp"
+            app:avvy_border_thickness_highlight="3dp"
+            app:avvy_distance_to_border="5dp"
+            app:avvy_highlighted="true"
+            app:avvy_loading_arches="5"
+            app:avvy_loading_arches_degree_area="90"
+            tools:ignore="MissingConstraints"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/email_tv"
@@ -45,7 +46,7 @@
             app:hintTextColor="@color/indigo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/chosen_image"
+            app:layout_constraintTop_toBottomOf="@id/profileImage"
             app:startIconDrawable="@drawable/ic_baseline_account_circle_24">
 
             <com.google.android.material.textfield.TextInputEditText
