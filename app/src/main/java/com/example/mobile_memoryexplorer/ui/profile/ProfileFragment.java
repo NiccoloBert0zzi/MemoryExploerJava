@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -37,6 +38,7 @@ public class ProfileFragment extends Fragment {
   private final List<Memory> list = new ArrayList<>();
   String email;
   MySharedData mySharedData;
+
   public View onCreateView(@NonNull LayoutInflater inflater,
                            ViewGroup container, Bundle savedInstanceState) {
     ProfileViewModel profileViewModel =
@@ -46,6 +48,21 @@ public class ProfileFragment extends Fragment {
     email = MySharedData.getEmail();
     binding = FragmentProfileBinding.inflate(inflater, container, false);
     View root = binding.getRoot();
+
+    if (MySharedData.getThemePreferences()) {
+      binding.switchTheme.setChecked(true);
+      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+    }
+    binding.switchTheme.setOnClickListener(v -> {
+      if (!MySharedData.getThemePreferences()) {
+        mySharedData.setThemePreferences(true);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+      } else {
+        mySharedData.setThemePreferences(false);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+      }
+    });
+
     dbRef = FirebaseDatabase.getInstance().getReference("memories");
     prepareItemData();
     //Set view
@@ -65,12 +82,12 @@ public class ProfileFragment extends Fragment {
     });
     //logout
     binding.buttonLogout.setOnClickListener(v -> {
-        MySharedData mySharedData = new MySharedData(this.getContext());
-        mySharedData.setSharedpreferences("remember", "false");
-        //start login activity
-        Intent loginpage= new Intent(this.getContext(), Login.class);
-        loginpage.setFlags(loginpage.getFlags()| Intent.FLAG_ACTIVITY_NO_HISTORY);
-        startActivity(loginpage);
+      MySharedData mySharedData = new MySharedData(this.getContext());
+      mySharedData.setSharedpreferences("remember", "false");
+      //start login activity
+      Intent loginpage = new Intent(this.getContext(), Login.class);
+      loginpage.setFlags(loginpage.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
+      startActivity(loginpage);
     });
     return root;
   }
@@ -80,6 +97,7 @@ public class ProfileFragment extends Fragment {
     super.onDestroyView();
     binding = null;
   }
+
   public void prepareItemData() {
     dbRef.addValueEventListener(new ValueEventListener() {
       @Override

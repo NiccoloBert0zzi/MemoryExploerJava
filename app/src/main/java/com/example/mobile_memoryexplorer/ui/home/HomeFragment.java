@@ -1,5 +1,6 @@
 package com.example.mobile_memoryexplorer.ui.home;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,10 +36,10 @@ public class HomeFragment extends Fragment {
                            ViewGroup container, Bundle savedInstanceState) {
     binding = FragmentHomeBinding.inflate(inflater, container, false);
     View root = binding.getRoot();
-    mySharedData = new MySharedData(getContext());
+    mySharedData = new MySharedData(this.getContext());
     email = MySharedData.getEmail();
     dbRef = FirebaseDatabase.getInstance().getReference("memories");
-    prepareItemData();
+    prepareItemData(this.getContext());
     return root;
   }
 
@@ -48,7 +49,7 @@ public class HomeFragment extends Fragment {
     binding = null;
   }
 
-  public void prepareItemData() {
+  public void prepareItemData(Context ctx) {
     dbRef.addValueEventListener(new ValueEventListener() {
       @Override
       public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -59,13 +60,13 @@ public class HomeFragment extends Fragment {
             list.add(m);
         }
         if (list.isEmpty()) {
-          Toast.makeText(getContext(), "No memories found", Toast.LENGTH_SHORT).show();
+          Toast.makeText(ctx, "No memories found", Toast.LENGTH_SHORT).show();
         } else {
           if (binding != null) {
             //set GridLayoutManager in recyclerView and show items in grid with two columns
-            binding.recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+            binding.recyclerView.setLayoutManager(new GridLayoutManager(ctx, 2));
             //set adapter ItemAdapter in recyclerView
-            binding.recyclerView.setAdapter(new MemoriesListAdapter(list, getContext()));
+            binding.recyclerView.setAdapter(new MemoriesListAdapter(list, ctx));
           }
         }
       }

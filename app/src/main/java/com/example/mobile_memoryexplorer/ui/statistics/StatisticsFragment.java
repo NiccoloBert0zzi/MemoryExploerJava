@@ -160,6 +160,8 @@ public class StatisticsFragment extends Fragment {
     binding.barChart.setData(data);
 
     binding.barChart.getDescription().setEnabled(false);
+    binding.barChart.setDrawHoleEnabled(true);
+    binding.barChart.setHoleColor(0);
     binding.barChart.getLegend().setEnabled(false);
     binding.barChart.animateY(1000);
     binding.barChart.invalidate();

@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
@@ -45,6 +46,9 @@ public class Login extends AppCompatActivity {
     getSupportActionBar().setCustomView(R.layout.action_bar_layout);
 
     mySharedData = new MySharedData(this);
+    if (MySharedData.getThemePreferences()) {
+      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+    }
     if (mySharedData.getRemember().equals("true")) {
       Intent homePage = new Intent(this, MainActivity.class);
       homePage.setFlags(homePage.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);

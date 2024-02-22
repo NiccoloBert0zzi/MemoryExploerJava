@@ -11,6 +11,7 @@ import com.example.mobile_memoryexplorer.Auth.Login;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -19,7 +20,6 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.mobile_memoryexplorer.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);

@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/ScreenBackground"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.profile.ProfileFragment">
@@ -13,9 +14,9 @@
 
         <xyz.schwaab.avvylib.AvatarView
             android:id="@+id/profileImage"
-            android:src="@drawable/empty_user"
             android:layout_width="128dp"
             android:layout_height="128dp"
+            android:src="@drawable/empty_user"
             app:avvy_border_color="@color/indigo"
             app:avvy_border_highlight_color="@color/indigo"
             app:avvy_border_highlight_color_end="@color/indigo"
@@ -27,18 +28,28 @@
             app:avvy_loading_arches_degree_area="90"
             tools:ignore="MissingConstraints" />
 
-
         <Button
             android:id="@+id/button_logout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:textSize="10sp"
             android:backgroundTint="@color/indigo"
             android:text="@string/LogOut"
             android:textColor="@color/white"
+            android:textSize="10sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switchTheme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:thumb="@drawable/thumb"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_logout"
+            app:track="@drawable/track" />
+
 
         <TextView
             android:id="@+id/name"
@@ -79,17 +90,18 @@
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/address" />
+
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="12dp"
-            android:text="My memories"
             android:fontFamily="@font/plusjakartasans_bold"
+            android:text="My memories"
             android:textColor="@color/indigo"
-            app:layout_constraintTop_toBottomOf="@id/birdthday"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/birdthday" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
