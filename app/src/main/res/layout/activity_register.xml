@@ -87,74 +87,6 @@
                 android:inputType="textEmailAddress" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/surname_tv"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:hint="Cognome"
-            app:boxStrokeColor="@color/indigo"
-            app:helperText="Inserisci il cognome"
-            app:helperTextTextColor="@color/indigo"
-            app:hintTextColor="@color/indigo"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/name_tv"
-            app:startIconDrawable="@drawable/ic_baseline_contacts_24">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/surname"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/address_tv"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:hint="indirizzo"
-            app:boxStrokeColor="@color/indigo"
-            app:helperText="Inserisci l'inidirizzo"
-            app:helperTextTextColor="@color/indigo"
-            app:hintTextColor="@color/indigo"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/surname_tv"
-            app:startIconDrawable="@drawable/ic_baseline_contacts_24">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/address"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/birthdate_tv"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:hint="Compleanno"
-            app:boxStrokeColor="@color/indigo"
-            app:helperText="Inserisci il tuo compleanno"
-            app:helperTextTextColor="@color/indigo"
-            app:hintTextColor="@color/indigo"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/address_tv"
-            app:startIconDrawable="@drawable/ic_baseline_contacts_24">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/birthdate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress" />
-        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/password_tv"
@@ -169,7 +101,7 @@
             app:hintTextColor="@color/indigo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/birthdate_tv"
+            app:layout_constraintTop_toBottomOf="@id/name_tv"
             app:startIconDrawable="@drawable/ic_baseline_account_circle_24">
 
             <com.google.android.material.textfield.TextInputEditText

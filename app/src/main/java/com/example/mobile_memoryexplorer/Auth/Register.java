@@ -2,24 +2,25 @@ package com.example.mobile_memoryexplorer.Auth;
 
 import static android.content.ContentValues.TAG;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
 
-import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.mobile_memoryexplorer.Database.AppDatabase;
 import com.example.mobile_memoryexplorer.MainActivity;
 import com.example.mobile_memoryexplorer.Database.Profile;
@@ -31,6 +32,8 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+
 
 public class Register extends AppCompatActivity {
   private FirebaseAuth auth;
@@ -38,6 +41,7 @@ public class Register extends AppCompatActivity {
   private Uri imageURI;
   FirebaseStorage storage = FirebaseStorage.getInstance();
   MySharedData mySharedData;
+  ActivityResultLauncher<Uri> takePicture;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +51,9 @@ public class Register extends AppCompatActivity {
     getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
     getSupportActionBar().setCustomView(R.layout.action_bar_layout);
     mySharedData = new MySharedData(this);
+
+    imageURI = createUri();
+    registerPictureProfile();
 
     auth = FirebaseAuth.getInstance();
     binding.register.setOnClickListener(v -> {
@@ -100,22 +107,40 @@ public class Register extends AppCompatActivity {
       });
     });
     binding.login.setOnClickListener(v -> startActivity(new Intent(this, Login.class)));
-    binding.profileImage.setOnClickListener(v -> {
-      Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-      someActivityResultLauncher.launch(intent);
+    binding.profileImage.setOnClickListener(v -> checkCameraPermission());
+  }
+
+  private Uri createUri() {
+    File file = new File(getFilesDir(), "profileImage.jpg");
+    return FileProvider.getUriForFile(this, "com.example.mobile_memoryexplorer.fileprovider", file);
+  }
+
+  private void registerPictureProfile() {
+    takePicture = registerForActivityResult(new ActivityResultContracts.TakePicture(), result -> {
+      if (result) {
+        imageURI = createUri();
+        Glide.with(this)
+            .load(imageURI)
+            .into(binding.profileImage);
+      }
     });
   }
 
-  ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
-      new ActivityResultContracts.StartActivityForResult(),
-      new ActivityResultCallback<ActivityResult>() {
-        @Override
-        public void onActivityResult(ActivityResult result) {
-          if (result.getResultCode() == Activity.RESULT_OK) {
-            imageURI = result.getData().getData();
-            binding.profileImage.setImageURI(result.getData().getData());
-          }
-        }
-      });
+  private void checkCameraPermission() {
+    if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+      ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, 101);
+    } else {
+      takePicture.launch(imageURI);
+    }
+  }
 
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    if (requestCode == 101 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+      takePicture.launch(imageURI);
+    } else {
+      Toast.makeText(this, "Permessi alla fotocamera negati!", Toast.LENGTH_SHORT).show();
+    }
+  }
 }

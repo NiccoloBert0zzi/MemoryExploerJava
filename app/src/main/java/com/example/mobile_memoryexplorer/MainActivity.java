@@ -3,28 +3,34 @@ package com.example.mobile_memoryexplorer;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.Menu;
-import android.view.MenuInflater;
+import android.view.WindowManager;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.mobile_memoryexplorer.databinding.ActivityMainBinding;
+import com.example.mobile_memoryexplorer.ui.addMemory.Memory;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
@@ -33,10 +39,25 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.Priority;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
   private LocationRequest locationRequest;
-  double latitude,longitude;
+  double latitude, longitude;
+  String email;
+  private DatabaseReference dbRef;
+  MySharedData mySharedData;
+  private final List<Memory> list = new ArrayList<>();
+  Runnable runnable;
+  private List<String> cacheNotifications;
+
   @SuppressLint("MissingPermission")
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -46,14 +67,17 @@ public class MainActivity extends AppCompatActivity {
     setContentView(binding.getRoot());
     getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
     getSupportActionBar().setCustomView(R.layout.action_bar_layout);
-    // Passing each menu ID as a set of Ids because each
-    // menu should be considered as top level destinations.
     AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
         R.id.navigation_home, R.id.navigation_addmemory, R.id.navigation_profile, R.id.navigation_statistics)
         .build();
     NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
     NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
     NavigationUI.setupWithNavController(binding.navView, navController);
+    
+    cacheNotifications = new ArrayList<>();
+    mySharedData = new MySharedData(this);
+    email = MySharedData.getEmail();
+    dbRef = FirebaseDatabase.getInstance().getReference("memories");
 
     locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 100)
         .setWaitForAccurateLocation(false)
@@ -61,26 +85,84 @@ public class MainActivity extends AppCompatActivity {
         .setMaxUpdateDelayMillis(100)
         .build();
     final Handler handler = new Handler();
-    Runnable runnable = new Runnable() {
+    runnable = new Runnable() {
       public void run() {
-        //get position evry 5 seconds
-        getCurrentLocation();
+        //get position every 5 seconds
         handler.postDelayed(this, 5000);
-        float[] results = new float[2];
-        Location.distanceBetween(latitude, longitude, 44.0491517, 12.5673628, results);
-        //distanza minore di 5km
-        if(results[0]<5000){
-          System.out.println("Distanza minore di 5km" + results[0]);
+        float[] results = new float[1];
+        getCurrentLocation();
+        for (Memory m : list) {
+          Location.distanceBetween(latitude, longitude, Double.parseDouble(m.getLatitude()), Double.parseDouble(m.getLongitude()), results);
+          //distanza minore di 5km
+          if (results[0] < 5000) {
+            System.out.println("Sei a " + results[0] + " da " + m.getTitle());
+            if (!cacheNotifications.contains(m.getId())) {
+              cacheNotifications.add(m.getId());
+              sendNotification(m.getTitle(), m.getId());
+            }
+          }
         }
       }
-    };runnable.run();
+    };
+    prepareItemData();
   }
 
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    MenuInflater inflater = getMenuInflater();
-    inflater.inflate(R.menu.menu, menu);
-    return super.onCreateOptionsMenu(menu);
+  private void sendNotification(String title, String id) {
+    NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "notification")
+        .setSmallIcon(R.drawable.logo)
+        .setContentTitle("Sei vicino a " + title)
+        .setContentText("Torna a visitarlo!")
+        .setAutoCancel(true)
+        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+    Intent singleMemory = new Intent(this, SingleMemory.class);
+    Bundle b = new Bundle();
+    b.putString("id", id); //Your id
+    singleMemory.putExtras(b);
+
+    PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, singleMemory, PendingIntent.FLAG_MUTABLE);
+    builder.setContentIntent(pendingIntent);
+    NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+      NotificationChannel channel = notificationManager.getNotificationChannel("notification");
+      if (channel == null) {
+        int importance = NotificationManager.IMPORTANCE_HIGH;
+        channel = new NotificationChannel("notification", "DESCRIZIONE", importance);
+        channel.setLightColor(Color.GREEN);
+        channel.enableVibration(true);
+        notificationManager.createNotificationChannel(channel);
+      }
+    }
+    notificationManager.notify(0, builder.build());
+  }
+
+  public void prepareItemData() {
+    dbRef.addValueEventListener(new ValueEventListener() {
+      @Override
+      public void onDataChange(@NonNull DataSnapshot snapshot) {
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        list.clear();
+        for (DataSnapshot memorySnapshot : snapshot.getChildren()) {
+          Memory m = memorySnapshot.getValue(Memory.class);
+          if (m.getCreator().equals(email)) {
+            list.add(m);
+          }
+        }
+        if (!list.isEmpty()) {
+          runnable.run();
+        }
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+      }
+
+      @Override
+      public void onCancelled(@NonNull DatabaseError error) {
+        // calling on cancelled method when we receive
+        // any error or we are not able to get the data.
+        Toast.makeText(MainActivity.this, "Fail to get data.", Toast.LENGTH_SHORT).show();
+      }
+    });
+
   }
 
   @Override

@@ -9,6 +9,7 @@ import android.text.style.UnderlineSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.text.SpannableString;
@@ -58,6 +59,7 @@ public class MemoriesListAdapter extends RecyclerView.Adapter<MemoriesListAdapte
       my_favorite_tv = view.findViewById(R.id.my_favourite);
       image = view.findViewById(R.id.imgVersionName);
       favorite = view.findViewById(R.id.favorite);
+
       if(isProfile){
         favorite.setVisibility(View.GONE);
       }
@@ -81,6 +83,7 @@ public class MemoriesListAdapter extends RecyclerView.Adapter<MemoriesListAdapte
           singleMemory.putExtras(b); //Put your id to your next Intent
           context.startActivity(singleMemory);
         });
+    holder.itemView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.animation));
   }
 
   @Override

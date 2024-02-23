@@ -20,11 +20,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
 public class SingleMemory extends AppCompatActivity {
   private DatabaseReference dbRef;
@@ -32,6 +27,7 @@ public class SingleMemory extends AppCompatActivity {
   String email;
   MySharedData mySharedData;
   Memory m;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -45,7 +41,7 @@ public class SingleMemory extends AppCompatActivity {
 
     Bundle b = getIntent().getExtras();
     String id = b.getString("id");
-    dbRef = FirebaseDatabase.getInstance().getReference("memories/"+id);
+    dbRef = FirebaseDatabase.getInstance().getReference("memories/" + id);
     loadInfo();
 
     binding.favorite.setOnClickListener(v -> {
@@ -60,8 +56,8 @@ public class SingleMemory extends AppCompatActivity {
         Toast.makeText(this, m.getTitle() + " aggiunto ai preferiti!", Toast.LENGTH_SHORT).show();
       }
     });
-  }
 
+  }
   private void loadInfo() {
     dbRef.addValueEventListener(new ValueEventListener() {
       @Override
@@ -71,29 +67,22 @@ public class SingleMemory extends AppCompatActivity {
           binding.title.setText(m.getTitle());
           binding.description.setText(m.getDescription());
           binding.favorite.setTag(m.getId());
-          if(m.getCreator().equals(email)){
+          if (m.getCreator().equals(email)) {
             binding.favorite.setVisibility(View.GONE);
           }
-          Calendar calendar = Calendar.getInstance();
-          try {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.ITALIAN);
-            Date date = sdf.parse(m.getDate());
-            calendar.setTime(date);
-            int year = calendar.get(Calendar.YEAR);
-            String placeholder = m.getCreator()+"-"+ year;
-            binding.creatorDate.setText(placeholder);
-          } catch (ParseException e) {
-            throw new RuntimeException(e);
-          }
+          String placeholder = m.getDate();
+          binding.creatorDate.setText(placeholder);
           Glide.with(binding.getRoot().getContext())
               .load(Uri.parse(m.getImage()))
               .into(binding.memoryImage);
         }
       }
+
       @Override
       public void onCancelled(@NonNull DatabaseError error) {
         Toast.makeText(SingleMemory.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
       }
     });
   }
+
 }

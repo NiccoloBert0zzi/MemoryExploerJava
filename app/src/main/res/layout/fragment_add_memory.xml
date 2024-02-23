@@ -55,6 +55,26 @@
             app:layout_constraintTop_toBottomOf="@+id/memory_image"
             android:importantForAutofill="no" />
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/birthday_tv"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="gg-mm-aaaa"
+            app:boxStrokeColor="@color/indigo"
+            app:hintTextColor="@color/indigo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/description"
+            app:startIconDrawable="@drawable/baseline_calendar_today_24">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/birthday"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress" />
+        </com.google.android.material.textfield.TextInputLayout>
+
         <Button
             android:id="@+id/add_memory"
             android:layout_width="wrap_content"
@@ -65,7 +85,7 @@
             android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/description" />
+            app:layout_constraintTop_toBottomOf="@+id/birthday_tv" />
 
         <ProgressBar
             android:id="@+id/progressBar"
