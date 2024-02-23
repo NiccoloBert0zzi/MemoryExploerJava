@@ -5,14 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.style.UnderlineSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.text.SpannableString;
 import android.widget.Toast;
 
 import java.text.ParseException;
@@ -30,7 +28,7 @@ import com.example.mobile_memoryexplorer.Database.AppDatabase;
 import com.example.mobile_memoryexplorer.Database.Favourite;
 import com.example.mobile_memoryexplorer.ui.addMemory.Memory;
 import com.example.mobile_memoryexplorer.R;
-import com.example.mobile_memoryexplorer.SingleMemory;
+import com.example.mobile_memoryexplorer.ui.SingleMemory.SingleMemory;
 
 public class MemoriesListAdapter extends RecyclerView.Adapter<MemoriesListAdapter.MyViewHolder> {
 

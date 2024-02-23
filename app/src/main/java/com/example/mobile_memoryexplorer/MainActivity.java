@@ -30,6 +30,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.mobile_memoryexplorer.databinding.ActivityMainBinding;
+import com.example.mobile_memoryexplorer.ui.SingleMemory.SingleMemory;
 import com.example.mobile_memoryexplorer.ui.addMemory.Memory;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
     NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
     NavigationUI.setupWithNavController(binding.navView, navController);
-    
+
     cacheNotifications = new ArrayList<>();
     mySharedData = new MySharedData(this);
     email = MySharedData.getEmail();

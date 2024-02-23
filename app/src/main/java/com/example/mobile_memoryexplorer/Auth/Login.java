@@ -1,17 +1,10 @@
 package com.example.mobile_memoryexplorer.Auth;
 
 import static android.content.ContentValues.TAG;
-import static android.hardware.biometrics.BiometricManager.Authenticators.BIOMETRIC_STRONG;
-import static android.hardware.biometrics.BiometricManager.Authenticators.DEVICE_CREDENTIAL;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.biometric.BiometricManager;
-import androidx.biometric.BiometricPrompt;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -20,7 +13,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -35,14 +27,13 @@ import com.example.mobile_memoryexplorer.R;
 import com.example.mobile_memoryexplorer.databinding.ActivityLoginBinding;
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.util.concurrent.Executor;
-
 public class Login extends AppCompatActivity {
   private static final int REQUEST_CODE = 101010;
 
   private FirebaseAuth auth;
   private ActivityLoginBinding binding;
   MySharedData mySharedData;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -55,13 +46,13 @@ public class Login extends AppCompatActivity {
     if (MySharedData.getThemePreferences()) {
       AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
     }
-    if (mySharedData.getRemember().equals("true")) {
+    if (MySharedData.getRemember().equals("true")) {
       Intent homePage = new Intent(this, MainActivity.class);
       startActivity(homePage);
     }
     auth = FirebaseAuth.getInstance();
 
-    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
       if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_CODE);
       }
@@ -79,7 +70,7 @@ public class Login extends AppCompatActivity {
         if (task.isSuccessful()) {
 
           AppDatabase appDb = AppDatabase.getInstance(Login.this);
-          if(appDb.profileDao().getProfile(email) == null){
+          if (appDb.profileDao().getProfile(email) == null) {
             Profile profile = new Profile(email, task.getResult().getUser().getDisplayName(), task.getResult().getUser().getPhotoUrl().toString());
             appDb.profileDao().insert(profile);
           }
@@ -115,7 +106,7 @@ public class Login extends AppCompatActivity {
   @Override
   protected void onResume() {
     super.onResume();
-    if (mySharedData.getRemember().equals("true")) {
+    if (MySharedData.getRemember().equals("true")) {
       Intent homePage = new Intent(this, MainActivity.class);
       startActivity(homePage);
     }

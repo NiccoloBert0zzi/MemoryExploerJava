@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel;
 import com.example.mobile_memoryexplorer.Database.AppDatabase;
 import com.example.mobile_memoryexplorer.Database.Profile;
 import com.example.mobile_memoryexplorer.MySharedData;
-import com.google.firebase.database.DatabaseReference;
 
 import java.util.List;
 import java.util.Objects;
@@ -37,7 +36,7 @@ public class ProfileViewModel extends ViewModel {
 
   public MutableLiveData<String> getName() {
     MutableLiveData<String> name = new MutableLiveData<>();
-    name.setValue("Nome: "+profile.getName());
+    name.setValue(profile.getName());
     return name;
   }
   public MutableLiveData<String> getimageURI() {

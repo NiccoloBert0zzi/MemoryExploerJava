@@ -59,4 +59,5 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation("xyz.schwaab:avvylib:1.2.0")
     implementation ("androidx.biometric:biometric:1.1.0")
+    implementation ("org.osmdroid:osmdroid-android:6.1.14")
 }

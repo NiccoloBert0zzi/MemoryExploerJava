@@ -81,7 +81,7 @@ public class HomeFragment extends Fragment {
         for (DataSnapshot memorySnapshot : snapshot.getChildren()) {
           Memory m = memorySnapshot.getValue(Memory.class);
           if (!m.getCreator().equals(email)){
-            if(filter_chosen != "Mondo"){
+            if(!filter_chosen.equals("Mondo")){
                 if(getlocation(m.getLatitude(), m.getLongitude()).equals(filter_chosen)){
                   list.add(m);
                 }

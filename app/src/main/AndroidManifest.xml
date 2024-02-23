@@ -28,7 +28,7 @@
             android:name=".Database.Profile"
             android:exported="false" />
         <activity
-            android:name=".SingleMemory"
+            android:name=".ui.SingleMemory.SingleMemory"
             android:exported="false" />
         <activity
             android:name=".Auth.Register"
