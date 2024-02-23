@@ -5,7 +5,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -25,7 +24,6 @@ import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
 
 import com.example.mobile_memoryexplorer.MainActivity;
-import com.example.mobile_memoryexplorer.Memory;
 import com.example.mobile_memoryexplorer.MySharedData;
 import com.example.mobile_memoryexplorer.databinding.FragmentAddMemoryBinding;
 import com.google.firebase.database.DatabaseReference;

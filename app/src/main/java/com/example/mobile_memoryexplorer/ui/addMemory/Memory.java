@@ -1,4 +1,4 @@
-package com.example.mobile_memoryexplorer;
+package com.example.mobile_memoryexplorer.ui.addMemory;
 
 public class Memory {
   public Memory(String id, String creator, String title, String description, String date, String latitude, String longitude, String image) {

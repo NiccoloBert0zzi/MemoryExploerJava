@@ -27,6 +27,7 @@ import com.example.mobile_memoryexplorer.MySharedData;
 import com.example.mobile_memoryexplorer.R;
 import com.example.mobile_memoryexplorer.databinding.ActivityRegisterBinding;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -65,11 +66,20 @@ public class Register extends AppCompatActivity {
             // Sign in success, update UI
             storage.getReference("Images/" + email + "/profileImage").getDownloadUrl().addOnSuccessListener(uri -> {
               imageURI = uri;
+              //save in room
               AppDatabase appDb = AppDatabase.getInstance(Register.this);
-              Profile profile = new Profile(email, binding.name.getText().toString(), binding.surname.getText().toString(), binding.address.getText().toString(), binding.birthdate.getText().toString(), imageURI.toString());
+              Profile profile = new Profile(email, binding.name.getText().toString(), imageURI.toString());
               appDb.profileDao().insert(profile);
+              //save in firebase
+              UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                  .setDisplayName(binding.name.getText().toString())
+                  .setPhotoUri(imageURI)
+                  .build();
+              task.getResult().getUser().updateProfile(profileUpdates);
+              //save in shared preferences
               mySharedData.setSharedpreferences("email", email);
               Log.d(TAG, "createUserWithEmail:success");
+              //update UI
               binding.progressBar.setVisibility(View.GONE);
               getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
               Intent homePage = new Intent(Register.this, MainActivity.class);

@@ -11,8 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 
-import com.example.mobile_memoryexplorer.MemoriesListAdapter;
-import com.example.mobile_memoryexplorer.Memory;
+import com.example.mobile_memoryexplorer.ui.addMemory.Memory;
 import com.example.mobile_memoryexplorer.MySharedData;
 import com.example.mobile_memoryexplorer.databinding.FragmentHomeBinding;
 import com.google.firebase.database.DataSnapshot;
@@ -66,7 +65,7 @@ public class HomeFragment extends Fragment {
             //set GridLayoutManager in recyclerView and show items in grid with two columns
             binding.recyclerView.setLayoutManager(new GridLayoutManager(ctx, 2));
             //set adapter ItemAdapter in recyclerView
-            binding.recyclerView.setAdapter(new MemoriesListAdapter(list, ctx));
+            binding.recyclerView.setAdapter(new MemoriesListAdapter(list, ctx,email,false));
           }
         }
       }

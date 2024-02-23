@@ -12,6 +12,8 @@ import java.util.List;
 public interface ProfileDao {
   @Query("SELECT * FROM Profile")
   List<Profile> getAll();
+  @Query("SELECT * FROM Profile WHERE email = :email")
+  Profile getProfile(String email);
 
   @Insert
   void insert(Profile student);

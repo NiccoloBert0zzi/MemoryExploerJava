@@ -40,24 +40,9 @@ public class ProfileViewModel extends ViewModel {
     name.setValue("Nome: "+profile.getName());
     return name;
   }
-  public MutableLiveData<String> getSurnName() {
-    MutableLiveData<String> name = new MutableLiveData<>();
-    name.setValue("Cognome: "+profile.getSurname());
-    return name;
-  }
-  public MutableLiveData<String> getAddress() {
-    MutableLiveData<String> name = new MutableLiveData<>();
-    name.setValue("Indirizzo: "+profile.getAddress());
-    return name;
-  }
   public MutableLiveData<String> getimageURI() {
     MutableLiveData<String> name = new MutableLiveData<>();
     name.setValue(profile.getImageUri());
-    return name;
-  }
-  public MutableLiveData<String> getBirthdate() {
-    MutableLiveData<String> name = new MutableLiveData<>();
-    name.setValue("Compleanno: "+profile.getBirthdate());
     return name;
   }
 }

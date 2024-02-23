@@ -25,6 +25,8 @@ import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.example.mobile_memoryexplorer.Database.AppDatabase;
+import com.example.mobile_memoryexplorer.Database.Profile;
 import com.example.mobile_memoryexplorer.MainActivity;
 import com.example.mobile_memoryexplorer.MySharedData;
 import com.example.mobile_memoryexplorer.R;
@@ -35,8 +37,6 @@ import java.util.concurrent.Executor;
 
 public class Login extends AppCompatActivity {
   private static final int REQUEST_CODE = 101010;
-  private BiometricPrompt biometricPrompt;
-  private BiometricPrompt.PromptInfo promptInfo;
 
   private FirebaseAuth auth;
   private ActivityLoginBinding binding;
@@ -88,7 +88,7 @@ public class Login extends AppCompatActivity {
       }
 
       Executor executor = ContextCompat.getMainExecutor(this);
-      biometricPrompt = new BiometricPrompt(Login.this,
+      BiometricPrompt biometricPrompt = new BiometricPrompt(Login.this,
           executor, new BiometricPrompt.AuthenticationCallback() {
         @Override
         public void onAuthenticationError(int errorCode,
@@ -116,7 +116,7 @@ public class Login extends AppCompatActivity {
         }
       });
 
-      promptInfo = new BiometricPrompt.PromptInfo.Builder()
+      BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
           .setTitle("Biometric login for my app")
           .setSubtitle("Log in using your biometric credential")
           .setNegativeButtonText("Use account password")
@@ -134,6 +134,12 @@ public class Login extends AppCompatActivity {
       String password = binding.passsword.getText().toString();
       auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
         if (task.isSuccessful()) {
+
+          AppDatabase appDb = AppDatabase.getInstance(Login.this);
+          if(appDb.profileDao().getProfile(email) == null){
+            Profile profile = new Profile(email, task.getResult().getUser().getDisplayName(), task.getResult().getUser().getPhotoUrl().toString());
+            appDb.profileDao().insert(profile);
+          }
           // Sign in success, update UI with the signed-in user's information
           mySharedData.setSharedpreferences("email", email);
           binding.progressBar.setVisibility(View.GONE);
@@ -169,8 +175,7 @@ public class Login extends AppCompatActivity {
       new ActivityResultContracts.StartActivityForResult(),
       result -> {
         if (result.getResultCode() == REQUEST_CODE) {
-          // There are no request codes
-          Intent data = result.getData();
+          //TODO test fingerprint cicle
         }
       });
   private boolean isLocationPermissionGranted() {
