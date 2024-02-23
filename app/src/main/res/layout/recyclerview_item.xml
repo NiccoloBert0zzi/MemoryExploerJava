@@ -10,6 +10,7 @@
         android:layout_width="180dp"
         android:layout_height="180dp"
         app:cardCornerRadius="15dp"
+        android:layout_marginLeft="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">

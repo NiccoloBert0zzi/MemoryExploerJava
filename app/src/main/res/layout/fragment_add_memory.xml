@@ -75,11 +75,9 @@
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.824"
             app:layout_constraintStart_toEndOf="@+id/add_memory"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.961" />
+            app:layout_constraintTop_toBottomOf="@+id/add_memory" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
