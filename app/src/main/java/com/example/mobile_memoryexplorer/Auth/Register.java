@@ -10,8 +10,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -54,6 +56,9 @@ public class Register extends AppCompatActivity {
 
     imageURI = createUri();
     registerPictureProfile();
+
+    //take uri from drawable image
+    imageURI = getUriFromDrawable(R.drawable.empty_user);
 
     auth = FirebaseAuth.getInstance();
     binding.register.setOnClickListener(v -> {
@@ -144,4 +149,12 @@ public class Register extends AppCompatActivity {
       Toast.makeText(this, "Permessi alla fotocamera negati!", Toast.LENGTH_SHORT).show();
     }
   }
+  private Uri getUriFromDrawable(int drawableId) {
+    Resources resources = getResources();
+    return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
+        "://" + resources.getResourcePackageName(drawableId)
+        + '/' + resources.getResourceTypeName(drawableId)
+        + '/' + resources.getResourceEntryName(drawableId));
+  }
+
 }

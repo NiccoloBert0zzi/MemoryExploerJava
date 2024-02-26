@@ -77,18 +77,12 @@ public class AddMemoryFragment extends Fragment {
     View root = binding.getRoot();
     mySharedData = new MySharedData(this.getContext());
     email = MySharedData.getEmail();
+    marker = new Marker(binding.map);
     //take uri from drawable image
-
     imageURI = getUriFromDrawable(R.drawable.lake);
     //setup Calendar picker
-    calendar = Calendar.getInstance();
-    DatePickerDialog.OnDateSetListener date = (view, year, monthOfYear, dayOfMonth) -> {
-      calendar.set(Calendar.YEAR, year);
-      calendar.set(Calendar.MONTH, monthOfYear);
-      calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-      updateLabel();
-    };
-    marker = new Marker(binding.map);
+    setUpCalendar();
+
     try {
       lat = MainActivity.latitude;
       lon = MainActivity.longitude;
@@ -96,9 +90,6 @@ public class AddMemoryFragment extends Fragment {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    binding.birthday.setOnClickListener(v -> new DatePickerDialog(this.getContext(), R.style.DatePicker, date, calendar
-        .get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-        calendar.get(Calendar.DAY_OF_MONTH)).show());
 
     binding.addMemory.setOnClickListener(v -> {
       binding.progressBar.setVisibility(RelativeLayout.VISIBLE);
@@ -134,6 +125,20 @@ public class AddMemoryFragment extends Fragment {
     binding.isPublic.setOnCheckedChangeListener((buttonView, isChecked) ->
         isPublic = isChecked);
     return root;
+  }
+
+  private void setUpCalendar() {
+    calendar = Calendar.getInstance();
+    DatePickerDialog.OnDateSetListener date = (view, year, monthOfYear, dayOfMonth) -> {
+      calendar.set(Calendar.YEAR, year);
+      calendar.set(Calendar.MONTH, monthOfYear);
+      calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+      updateLabel();
+    };
+
+    binding.birthday.setOnClickListener(v -> new DatePickerDialog(this.getContext(), R.style.DatePicker, date, calendar
+        .get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)).show());
   }
 
   private void updateLabel() {

@@ -108,7 +108,6 @@ public class ProfileFragment extends Fragment {
             .load(Uri.parse(s))
             .into(binding.profileImage);
       } else {
-        //todo set default image in drawable
         binding.profileImage.setImageResource(R.drawable.ic_baseline_account_circle_24);
       }
       binding.progressBar.setVisibility(View.GONE);
