@@ -108,6 +108,7 @@ public class Register extends AppCompatActivity {
     });
     binding.login.setOnClickListener(v -> startActivity(new Intent(this, Login.class)));
     binding.profileImage.setOnClickListener(v -> checkCameraPermission());
+
   }
 
   private Uri createUri() {

@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import com.example.mobile_memoryexplorer.MainActivity;
 import com.example.mobile_memoryexplorer.R;
 import com.example.mobile_memoryexplorer.ResponsiveDimension;
 import com.example.mobile_memoryexplorer.ui.addMemory.Memory;
@@ -76,6 +77,7 @@ public class HomeFragment extends Fragment {
     dbRef.addValueEventListener(new ValueEventListener() {
       @Override
       public void onDataChange(@NonNull DataSnapshot snapshot) {
+        if(binding == null) return;
         binding.progressBar.setVisibility(RelativeLayout.VISIBLE);
         getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
             WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);

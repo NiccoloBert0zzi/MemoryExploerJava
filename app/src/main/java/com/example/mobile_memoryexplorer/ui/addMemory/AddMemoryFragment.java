@@ -5,7 +5,9 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.app.DatePickerDialog;
 
+import android.content.ContentResolver;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
@@ -73,8 +75,12 @@ public class AddMemoryFragment extends Fragment {
 
     binding = FragmentAddMemoryBinding.inflate(inflater, container, false);
     View root = binding.getRoot();
-    mySharedData = new MySharedData(getContext());
+    mySharedData = new MySharedData(this.getContext());
     email = MySharedData.getEmail();
+    //take uri from drawable image
+
+    imageURI = getUriFromDrawable(R.drawable.lake);
+    //setup Calendar picker
     calendar = Calendar.getInstance();
     DatePickerDialog.OnDateSetListener date = (view, year, monthOfYear, dayOfMonth) -> {
       calendar.set(Calendar.YEAR, year);
@@ -82,7 +88,7 @@ public class AddMemoryFragment extends Fragment {
       calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
       updateLabel();
     };
-    marker= new Marker(binding.map);
+    marker = new Marker(binding.map);
     try {
       lat = MainActivity.latitude;
       lon = MainActivity.longitude;
@@ -90,13 +96,14 @@ public class AddMemoryFragment extends Fragment {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    binding.birthday.setOnClickListener(v -> new DatePickerDialog(getContext(), R.style.DatePicker, date, calendar
+    binding.birthday.setOnClickListener(v -> new DatePickerDialog(this.getContext(), R.style.DatePicker, date, calendar
         .get(Calendar.YEAR), calendar.get(Calendar.MONTH),
         calendar.get(Calendar.DAY_OF_MONTH)).show());
 
-    //todo defalut image
     binding.addMemory.setOnClickListener(v -> {
       binding.progressBar.setVisibility(RelativeLayout.VISIBLE);
+      getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+          WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
       DatabaseReference memoryRef = database.getReference("memories/");
       String id = memoryRef.push().getKey();
       StorageReference ref = storage.getReference("Images/" + email + "/" + "memoriesImage/" + id);
@@ -107,12 +114,16 @@ public class AddMemoryFragment extends Fragment {
                 imageURI = uri;
                 Memory mem = new Memory(id, email, binding.title.getText().toString(), binding.description.getText().toString(), binding.birthday.getText().toString(), lat.toString(), lon.toString(), imageURI.toString(), isPublic);
                 finalMemoryRef.setValue(mem);
-                Toast.makeText(getContext(), "Memory added", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this.getContext(), "Memory added", Toast.LENGTH_SHORT).show();
                 binding.progressBar.setVisibility(View.GONE);
                 getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-              }).addOnFailureListener(e -> Toast.makeText(getContext(), "Error to create memory", Toast.LENGTH_SHORT).show()))
+              }).addOnFailureListener(e ->{
+                  Toast.makeText(this.getContext(), "Error to create memory", Toast.LENGTH_SHORT).show();
+                binding.progressBar.setVisibility(View.GONE);
+                getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+              }))
           .addOnFailureListener(e -> {
-            Toast.makeText(getContext(), "Error to load image", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this.getContext(), "Error to load image", Toast.LENGTH_SHORT).show();
             binding.progressBar.setVisibility(View.GONE);
             getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
           });
@@ -121,9 +132,7 @@ public class AddMemoryFragment extends Fragment {
     binding.memoryImage.setOnClickListener(v -> checkAndREquestForPermission());
 
     binding.isPublic.setOnCheckedChangeListener((buttonView, isChecked) ->
-    {
-      isPublic = isChecked;
-    });
+        isPublic = isChecked);
     return root;
   }
 
@@ -143,7 +152,7 @@ public class AddMemoryFragment extends Fragment {
     if (ContextCompat.checkSelfPermission(AddMemoryFragment.this.getContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE)
         != PackageManager.PERMISSION_GRANTED) {
       if (ActivityCompat.shouldShowRequestPermissionRationale(AddMemoryFragment.this.getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
-        Toast.makeText(getContext(), "Please accept for required permission", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this.getContext(), "Please accept for required permission", Toast.LENGTH_SHORT).show();
       } else {
         ActivityCompat.requestPermissions(AddMemoryFragment.this.getActivity(), new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
       }
@@ -159,7 +168,7 @@ public class AddMemoryFragment extends Fragment {
   }
 
   private void loadMap(Double lat, Double lon) throws IOException {
-    Configuration.getInstance().load(getContext(), getContext().getSharedPreferences("osmdroid", MODE_PRIVATE));
+    Configuration.getInstance().load(this.getContext(), this.getContext().getSharedPreferences("osmdroid", MODE_PRIVATE));
 
     MapView mapView = binding.map;
     mapView.setTileSource(TileSourceFactory.MAPNIK);
@@ -175,20 +184,15 @@ public class AddMemoryFragment extends Fragment {
     mapView.getOverlays().add(new MapEventsOverlay(new MapEventsReceiver() {
       @Override
       public boolean singleTapConfirmedHelper(GeoPoint p) {
-        binding.progressBar.setVisibility(RelativeLayout.VISIBLE);
-        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         try {
-
           binding.map.getOverlays().remove(marker);
           setMarker(binding.map, p);
         } catch (IOException e) {
           throw new RuntimeException(e);
         }
-        binding.progressBar.setVisibility(View.GONE);
-        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         return true;
       }
+
       @Override
       public boolean longPressHelper(GeoPoint p) {
         Log.e("MapView", "long click");
@@ -198,7 +202,7 @@ public class AddMemoryFragment extends Fragment {
   }
 
   private Address setLocation(Double lat, Double lon) throws IOException {
-    Geocoder gcd = new Geocoder(getContext(), Locale.getDefault());
+    Geocoder gcd = new Geocoder(this.getContext(), Locale.getDefault());
     List<Address> addresses;
     addresses = gcd.getFromLocation(lat, lon, 1);
     if (addresses.size() > 0) {
@@ -206,19 +210,29 @@ public class AddMemoryFragment extends Fragment {
     }
     return null;
   }
-private void setMarker(MapView mapView, GeoPoint currentLocation) throws IOException {
-  //add marker to current/clicked location
-  marker.setIcon(new BitmapDrawable(getResources(), new MyMarker(getContext()).getSmallMarker()));
-  if (setLocation(currentLocation.getLatitude(), currentLocation.getLongitude()) != null) {
-    marker.setTitle(setLocation(currentLocation.getLatitude(), currentLocation.getLongitude()).getCountryName());
-    marker.setSnippet(setLocation(currentLocation.getLatitude(), currentLocation.getLongitude()).getLocality());
+
+  private void setMarker(MapView mapView, GeoPoint currentLocation) throws IOException {
+    //add marker to current/clicked location
+    marker.setIcon(new BitmapDrawable(getResources(), new MyMarker(this.getContext()).getSmallMarker()));
+    if (setLocation(currentLocation.getLatitude(), currentLocation.getLongitude()) != null) {
+      marker.setTitle(setLocation(currentLocation.getLatitude(), currentLocation.getLongitude()).getCountryName());
+      marker.setSnippet(setLocation(currentLocation.getLatitude(), currentLocation.getLongitude()).getLocality());
+    }
+    marker.setPosition(currentLocation);
+    marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+    mapView.getOverlays().add(marker);
+    lat = currentLocation.getLatitude();
+    lon = currentLocation.getLongitude();
   }
-  marker.setPosition(currentLocation);
-  marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-  mapView.getOverlays().add(marker);
-  lat = currentLocation.getLatitude();
-  lon = currentLocation.getLongitude();
-}
+
+  private Uri getUriFromDrawable(int drawableId) {
+    Resources resources = getResources();
+    return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
+        "://" + resources.getResourcePackageName(drawableId)
+        + '/' + resources.getResourceTypeName(drawableId)
+        + '/' + resources.getResourceEntryName(drawableId));
+  }
+
   ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
       registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
 

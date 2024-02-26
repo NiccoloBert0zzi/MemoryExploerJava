@@ -81,6 +81,7 @@ public class SingleMemory extends AppCompatActivity {
     dbRef.addValueEventListener(new ValueEventListener() {
       @Override
       public void onDataChange(@NonNull DataSnapshot snapshot) {
+        if(binding == null) return;
         m = snapshot.getValue(Memory.class);
         if (m != null) {
           binding.title.setText(m.getTitle());
