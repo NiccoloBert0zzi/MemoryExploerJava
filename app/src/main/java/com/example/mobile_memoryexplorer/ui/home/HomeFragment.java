@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.example.mobile_memoryexplorer.R;
+import com.example.mobile_memoryexplorer.ResponsiveDimension;
 import com.example.mobile_memoryexplorer.ui.addMemory.Memory;
 import com.example.mobile_memoryexplorer.MySharedData;
 import com.example.mobile_memoryexplorer.databinding.FragmentHomeBinding;
@@ -43,7 +44,7 @@ public class HomeFragment extends Fragment {
   Map<String, Integer> locations = new HashMap<>();
   List<String> filter = new ArrayList<>();
   ArrayAdapter<String> adapterItem;
-  String filter_chosen="Mondo";
+  String filter_chosen = "Mondo";
 
   public View onCreateView(@NonNull LayoutInflater inflater,
                            ViewGroup container, Bundle savedInstanceState) {
@@ -53,6 +54,7 @@ public class HomeFragment extends Fragment {
     mySharedData = new MySharedData(this.getContext());
     email = MySharedData.getEmail();
     dbRef = FirebaseDatabase.getInstance().getReference("memories");
+    filter.clear();
     filter.add("Mondo");
     prepareItemData(this.getContext());
 
@@ -80,25 +82,25 @@ public class HomeFragment extends Fragment {
         list.clear();
         for (DataSnapshot memorySnapshot : snapshot.getChildren()) {
           Memory m = memorySnapshot.getValue(Memory.class);
-          if (!m.getCreator().equals(email)){
-            if(!filter_chosen.equals("Mondo")){
-                if(getlocation(m.getLatitude(), m.getLongitude()).equals(filter_chosen)){
-                  list.add(m);
-                }
+          if (!m.getCreator().equals(email) && m.isPublic()) {
+            if (!filter_chosen.equals("Mondo")) {
+              if (getlocation(m.getLatitude(), m.getLongitude()).equals(filter_chosen)) {
+                list.add(m);
+              }
             } else {
               list.add(m);
             }
           }
         }
-        if(filter.size()==1) downloadData();
+        if (filter.size() == 1) downloadData();
         if (list.isEmpty()) {
           Toast.makeText(ctx, "No memories found", Toast.LENGTH_SHORT).show();
         } else {
           if (binding != null) {
             //set GridLayoutManager in recyclerView and show items in grid with two columns
-            binding.recyclerView.setLayoutManager(new GridLayoutManager(ctx, 2));
+            binding.recyclerView.setLayoutManager(new GridLayoutManager(ctx, new ResponsiveDimension(getActivity().getWindowManager()).getResponsiveCollum()));
             //set adapter ItemAdapter in recyclerView
-            binding.recyclerView.setAdapter(new MemoriesListAdapter(list, ctx,email,false));
+            binding.recyclerView.setAdapter(new MemoriesListAdapter(list, ctx, email, false));
           }
         }
         binding.progressBar.setVisibility(View.GONE);
@@ -114,6 +116,7 @@ public class HomeFragment extends Fragment {
     });
 
   }
+
   private void downloadData() {
     for (Memory m : list) {
       String key = getlocation(m.getLatitude(), m.getLongitude());
@@ -134,6 +137,7 @@ public class HomeFragment extends Fragment {
     adapterItem = new ArrayAdapter<>(getContext(), R.layout.filter_list_item, filter);
     binding.autoCompleteTextView.setAdapter(adapterItem);
   }
+
   private String getlocation(String lat, String lon) {
     Geocoder gcd = new Geocoder(getContext(), Locale.getDefault());
     List<Address> addresses;

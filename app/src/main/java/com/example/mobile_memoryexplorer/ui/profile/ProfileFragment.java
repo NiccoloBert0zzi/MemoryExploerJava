@@ -22,6 +22,7 @@ import com.bumptech.glide.Glide;
 import com.example.mobile_memoryexplorer.Auth.Login;
 import com.example.mobile_memoryexplorer.Database.AppDatabase;
 import com.example.mobile_memoryexplorer.Database.Favourite;
+import com.example.mobile_memoryexplorer.ResponsiveDimension;
 import com.example.mobile_memoryexplorer.ui.home.MemoriesListAdapter;
 import com.example.mobile_memoryexplorer.ui.addMemory.Memory;
 import com.example.mobile_memoryexplorer.MySharedData;
@@ -157,7 +158,7 @@ public class ProfileFragment extends Fragment {
             Toast.makeText(getContext(), "No memories found", Toast.LENGTH_SHORT).show();
           }
           //set GridLayoutManager in recyclerView and show items in grid with two columns
-          binding.recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+          binding.recyclerView.setLayoutManager(new GridLayoutManager(getContext(), new ResponsiveDimension(getActivity().getWindowManager()).getResponsiveCollum()));
           //set adapter ItemAdapter in recyclerView
           binding.recyclerView.setAdapter(new MemoriesListAdapter(list, getContext(), email,true));
         }

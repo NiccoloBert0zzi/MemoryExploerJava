@@ -1,7 +1,7 @@
 package com.example.mobile_memoryexplorer.ui.addMemory;
 
 public class Memory {
-  public Memory(String id, String creator, String title, String description, String date, String latitude, String longitude, String image) {
+  public Memory(String id, String creator, String title, String description, String date, String latitude, String longitude, String image,Boolean isPublic) {
     this.title = title;
     this.description = description;
     this.date = date;
@@ -10,6 +10,7 @@ public class Memory {
     this.image = image;
     this.creator = creator;
     this.id = id;
+    this.isPublic = isPublic;
   }
 
   public Memory() {
@@ -55,6 +56,16 @@ public class Memory {
   private String latitude;
   private String longitude;
   private String image;
+
+  public boolean isPublic() {
+    return isPublic;
+  }
+
+  public void setPublic(boolean aPublic) {
+    isPublic = aPublic;
+  }
+
+  private boolean isPublic;
 
   @Override
   public String toString() {

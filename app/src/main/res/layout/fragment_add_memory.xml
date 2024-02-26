@@ -4,12 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingHorizontal="16dp"
     tools:context="ui.addMemory.AddMemoryFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="71dp">
 
         <TextView
             android:id="@+id/textview"
@@ -20,17 +23,30 @@
             android:textColor="@color/indigo"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/title_tv"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Titolo ricordo"
+            android:layout_marginTop="10dp"
+            app:boxStrokeColor="@color/indigo"
+            app:hintTextColor="@color/indigo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textview"
+            app:startIconDrawable="@drawable/ic_baseline_book_24">
         <EditText
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Memory Name"
             android:inputType="text"
             android:padding="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textview"
             android:importantForAutofill="no" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <ImageView
             android:id="@+id/memory_image"
@@ -38,34 +54,45 @@
             android:layout_height="200dp"
             android:layout_marginTop="20dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title"
+            app:layout_constraintTop_toBottomOf="@id/title_tv"
             android:contentDescription="memory_image"
             android:src="@drawable/lake"/>
-
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/description_tv"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Descrizione"
+            android:layout_marginTop="20dp"
+            app:boxStrokeColor="@color/indigo"
+            app:hintTextColor="@color/indigo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/memory_image"
+            app:startIconDrawable="@drawable/ic_baseline_description_24">
         <EditText
             android:id="@+id/description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Description"
-            android:layout_marginTop="20dp"
             android:inputType="text"
-            android:padding="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/memory_image"
             android:importantForAutofill="no" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/birthday_tv"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="gg-mm-aaaa"
+            android:hint="Data ricordo"
+            android:layout_marginTop="20dp"
             app:boxStrokeColor="@color/indigo"
             app:hintTextColor="@color/indigo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/description"
+            app:layout_constraintTop_toBottomOf="@id/description_tv"
             app:startIconDrawable="@drawable/baseline_calendar_today_24">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -75,6 +102,23 @@
                 android:inputType="textEmailAddress" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <CheckBox
+            android:id="@+id/is_public"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/birthday_tv"
+            app:layout_constraintStart_toStartOf="parent"
+            android:text="Pubblico"
+            android:textSize="13sp"
+            android:fontFamily="@font/plusjakartasans_regular"/>
+        <org.osmdroid.views.MapView
+            android:id="@+id/map"
+            android:layout_width="wrap_content"
+            android:layout_height="200dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/is_public" />
         <Button
             android:id="@+id/add_memory"
             android:layout_width="wrap_content"
@@ -85,7 +129,7 @@
             android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/birthday_tv" />
+            app:layout_constraintTop_toBottomOf="@+id/map" />
 
         <ProgressBar
             android:id="@+id/progressBar"

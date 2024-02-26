@@ -51,7 +51,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
   private LocationRequest locationRequest;
-  double latitude, longitude;
+  public static double latitude, longitude;
   String email;
   private DatabaseReference dbRef;
   MySharedData mySharedData;
@@ -92,14 +92,16 @@ public class MainActivity extends AppCompatActivity {
         handler.postDelayed(this, 5000);
         float[] results = new float[1];
         getCurrentLocation();
-        for (Memory m : list) {
-          Location.distanceBetween(latitude, longitude, Double.parseDouble(m.getLatitude()), Double.parseDouble(m.getLongitude()), results);
-          //distanza minore di 5km
-          if (results[0] < 5000) {
-            System.out.println("Sei a " + results[0] + " da " + m.getTitle());
-            if (!cacheNotifications.contains(m.getId())) {
-              cacheNotifications.add(m.getId());
-              sendNotification(m.getTitle(), m.getId());
+        if (!list.isEmpty()) {
+          for (Memory m : list) {
+            Location.distanceBetween(latitude, longitude, Double.parseDouble(m.getLatitude()), Double.parseDouble(m.getLongitude()), results);
+            //distanza minore di 5km
+            if (results[0] < 5000) {
+              System.out.println("Sei a " + results[0] + " da " + m.getTitle());
+              if (!cacheNotifications.contains(m.getId())) {
+                cacheNotifications.add(m.getId());
+                sendNotification(m.getTitle(), m.getId());
+              }
             }
           }
         }
@@ -150,9 +152,7 @@ public class MainActivity extends AppCompatActivity {
             list.add(m);
           }
         }
-        if (!list.isEmpty()) {
-          runnable.run();
-        }
+        runnable.run();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
       }
 
@@ -196,9 +196,7 @@ public class MainActivity extends AppCompatActivity {
 
   private void getCurrentLocation() {
     if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
       if (isGPSEnabled()) {
-
         LocationServices.getFusedLocationProviderClient(MainActivity.this)
             .requestLocationUpdates(locationRequest, new LocationCallback() {
               @Override
