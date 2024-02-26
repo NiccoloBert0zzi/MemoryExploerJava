@@ -56,7 +56,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title_tv"
             android:contentDescription="memory_image"
-            android:src="@drawable/lake"/>
+            android:src="@drawable/default_memory"/>
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/description_tv"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"

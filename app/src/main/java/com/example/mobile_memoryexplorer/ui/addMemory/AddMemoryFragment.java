@@ -79,7 +79,7 @@ public class AddMemoryFragment extends Fragment {
     email = MySharedData.getEmail();
     marker = new Marker(binding.map);
     //take uri from drawable image
-    imageURI = getUriFromDrawable(R.drawable.lake);
+    imageURI = getUriFromDrawable(R.drawable.default_memory);
     //setup Calendar picker
     setUpCalendar();
 
@@ -133,8 +133,8 @@ public class AddMemoryFragment extends Fragment {
       calendar.set(Calendar.YEAR, year);
       calendar.set(Calendar.MONTH, monthOfYear);
       calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-      updateLabel();
     };
+    updateLabel();
 
     binding.birthday.setOnClickListener(v -> new DatePickerDialog(this.getContext(), R.style.DatePicker, date, calendar
         .get(Calendar.YEAR), calendar.get(Calendar.MONTH),

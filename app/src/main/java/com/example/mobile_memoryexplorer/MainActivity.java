@@ -86,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
         .setMinUpdateIntervalMillis(3000)
         .setMaxUpdateDelayMillis(100)
         .build();
+    getCurrentLocation();
+
     final Handler handler = new Handler();
     runnable = new Runnable() {
       public void run() {
