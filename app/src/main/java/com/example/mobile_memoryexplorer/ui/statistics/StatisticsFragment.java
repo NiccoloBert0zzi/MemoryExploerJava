@@ -1,5 +1,6 @@
 package com.example.mobile_memoryexplorer.ui.statistics;
 
+import android.annotation.SuppressLint;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -16,9 +17,12 @@ import com.example.mobile_memoryexplorer.ui.addMemory.Memory;
 import com.example.mobile_memoryexplorer.MySharedData;
 import com.example.mobile_memoryexplorer.R;
 import com.example.mobile_memoryexplorer.databinding.FragmentStatisticsBinding;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -27,6 +31,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +57,7 @@ public class StatisticsFragment extends Fragment {
     View root = binding.getRoot();
 
     dbRef = FirebaseDatabase.getInstance().getReference("memories");
+    assert getContext() != null;
     mySharedData = new MySharedData(getContext());
     email = MySharedData.getEmail();
     filter.add("Mondo");
@@ -62,6 +68,9 @@ public class StatisticsFragment extends Fragment {
       filter_chosen = parent.getItemAtPosition(position).toString();
       downloadData();
     });
+    locations.clear();
+    filter_chosen = "Mondo";
+    downloadData();
     return root;
   }
 
@@ -76,7 +85,7 @@ public class StatisticsFragment extends Fragment {
     dbRef.addValueEventListener(new ValueEventListener() {
       @Override
       public void onDataChange(@NonNull DataSnapshot snapshot) {
-        if(binding == null) return;
+        if (binding == null) return;
         list.clear();
         for (DataSnapshot memorySnapshot : snapshot.getChildren()) {
           Memory m = memorySnapshot.getValue(Memory.class);
@@ -106,7 +115,7 @@ public class StatisticsFragment extends Fragment {
       String key = getlocation(m.getLatitude(), m.getLongitude());
       if (key == null)
         continue;
-      if (!filter.contains(key) && filter_chosen == null) {
+      if (!filter.contains(key) && filter_chosen.equals("Mondo")) {
         filter.add(key);
       }
       if (filter_chosen != null && !filter_chosen.isEmpty()) {
@@ -118,12 +127,14 @@ public class StatisticsFragment extends Fragment {
       }
       setupBarChart();
     }
+    assert getContext() != null;
     adapterItem = new ArrayAdapter<>(getContext(), R.layout.filter_list_item, filter);
     binding.autoCompleteTextView.setAdapter(adapterItem);
   }
 
   //ritorna la citta in base alla latitudine e longitudine
   private String getlocation(String lat, String lon) {
+    assert getContext() != null;
     Geocoder gcd = new Geocoder(getContext(), Locale.getDefault());
     List<Address> addresses;
     try {
@@ -157,6 +168,7 @@ public class StatisticsFragment extends Fragment {
     dataSet.setColors(ColorTemplate.JOYFUL_COLORS);
 
     PieData data = new PieData(dataSet);
+    data.setValueTextSize(15f);
     binding.barChart.setData(data);
 
     binding.barChart.getDescription().setEnabled(false);
@@ -165,5 +177,19 @@ public class StatisticsFragment extends Fragment {
     binding.barChart.getLegend().setEnabled(false);
     binding.barChart.animateY(1000);
     binding.barChart.invalidate();
+
+    binding.barChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+      @SuppressLint("SetTextI18n")
+      @Override
+      public void onValueSelected(Entry e, Highlight h) {
+        PieEntry pe = (PieEntry) e;
+        String number = (int)e.getY() == 1 ? (int)e.getY()+" volta" : (int)e.getY()+" volte";
+        binding.info.setText("Hai visitato "+pe.getLabel()+" "+number);
+      }
+      @Override
+      public void onNothingSelected() {
+
+      }
+    });
   }
 }
