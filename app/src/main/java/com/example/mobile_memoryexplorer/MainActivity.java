@@ -1,6 +1,7 @@
 package com.example.mobile_memoryexplorer;
 
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.NotificationChannel;
@@ -18,6 +19,10 @@ import android.os.Looper;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -173,14 +178,18 @@ public class MainActivity extends AppCompatActivity {
   public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-    if (requestCode == REQUEST_CODE_POSITION && grantResults.length > 0) {
-      if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-        if (isGPSEnabled()) {
-          getCurrentLocation();
-        } else {
-          turnOnGPS();
+    switch (requestCode) {
+      case REQUEST_CODE_POSITION:
+        if (grantResults.length > 0) {
+          if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (isGPSEnabled()) {
+              getCurrentLocation();
+            } else {
+              turnOnGPS();
+            }
+          }
         }
-      }
+        break;
     }
   }
 
@@ -195,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void getCurrentLocation() {
-    if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+    if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
       if (isGPSEnabled()) {
         LocationServices.getFusedLocationProviderClient(MainActivity.this)
             .requestLocationUpdates(locationRequest, new LocationCallback() {
@@ -220,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
       }
 
     } else {
-      requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE_POSITION);
+      requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE_POSITION);
     }
   }
 

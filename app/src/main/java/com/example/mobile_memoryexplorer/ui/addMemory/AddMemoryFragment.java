@@ -2,21 +2,19 @@ package com.example.mobile_memoryexplorer.ui.addMemory;
 
 import static android.content.Context.MODE_PRIVATE;
 
-
+import android.app.Activity;
 import android.app.DatePickerDialog;
 
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.PickVisualMediaRequest;
-import androidx.activity.result.contract.ActivityResultContracts;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,10 +24,14 @@ import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 
 import com.example.mobile_memoryexplorer.MainActivity;
 import com.example.mobile_memoryexplorer.MyMarker;
@@ -53,6 +55,7 @@ import org.osmdroid.views.overlay.Marker;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -69,6 +72,8 @@ public class AddMemoryFragment extends Fragment {
   Double lat, lon;
   Marker marker;
   Boolean isPublic = false;
+
+  private static final int IMAGE_PICK_CODE = 1000;
 
   public View onCreateView(@NonNull LayoutInflater inflater,
                            ViewGroup container, Bundle savedInstanceState) {
@@ -108,8 +113,8 @@ public class AddMemoryFragment extends Fragment {
                 Toast.makeText(this.getContext(), "Memory added", Toast.LENGTH_SHORT).show();
                 binding.progressBar.setVisibility(View.GONE);
                 getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-              }).addOnFailureListener(e ->{
-                  Toast.makeText(this.getContext(), "Error to create memory", Toast.LENGTH_SHORT).show();
+              }).addOnFailureListener(e -> {
+                Toast.makeText(this.getContext(), "Error to create memory", Toast.LENGTH_SHORT).show();
                 binding.progressBar.setVisibility(View.GONE);
                 getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
               }))
@@ -120,12 +125,36 @@ public class AddMemoryFragment extends Fragment {
           });
     });
 
-    binding.memoryImage.setOnClickListener(v -> checkAndREquestForPermission());
+    binding.memoryImage.setOnClickListener(v -> {
+      openGallery();
+    });
 
     binding.isPublic.setOnCheckedChangeListener((buttonView, isChecked) ->
         isPublic = isChecked);
     return root;
   }
+
+  private void openGallery() {
+    Intent gallery = new Intent(Intent.ACTION_PICK);
+    gallery.setType("image/*");
+    gallery.setAction(Intent.ACTION_GET_CONTENT);
+    imageURI = gallery.getData();
+    folderResult.launch(gallery);
+  }
+
+  ActivityResultLauncher<Intent> folderResult = registerForActivityResult(
+      new ActivityResultContracts.StartActivityForResult(),
+      new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult result) {
+          if (result.getResultCode() == Activity.RESULT_OK) {
+            // There are no request codes
+            Intent data = result.getData();
+            imageURI = data.getData();
+            binding.memoryImage.setImageURI(imageURI);
+          }
+        }
+      });
 
   private void setUpCalendar() {
     calendar = Calendar.getInstance();
@@ -145,25 +174,6 @@ public class AddMemoryFragment extends Fragment {
     String myFormat = "dd-MM-yyyy";
     SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ITALIAN);
     binding.birthday.setText(sdf.format(calendar.getTime()));
-  }
-
-  private void openGallery() {
-    pickMedia.launch(new PickVisualMediaRequest.Builder()
-        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
-        .build());
-  }
-
-  private void checkAndREquestForPermission() {
-    if (ContextCompat.checkSelfPermission(AddMemoryFragment.this.getContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE)
-        != PackageManager.PERMISSION_GRANTED) {
-      if (ActivityCompat.shouldShowRequestPermissionRationale(AddMemoryFragment.this.getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
-        Toast.makeText(this.getContext(), "Please accept for required permission", Toast.LENGTH_SHORT).show();
-      } else {
-        ActivityCompat.requestPermissions(AddMemoryFragment.this.getActivity(), new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-      }
-    } else {
-      openGallery();
-    }
   }
 
   @Override
@@ -238,15 +248,4 @@ public class AddMemoryFragment extends Fragment {
         + '/' + resources.getResourceEntryName(drawableId));
   }
 
-  ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
-      registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
-
-        if (uri != null) {
-          Log.d("PhotoPicker", "Selected URI: " + uri);
-          imageURI = uri;
-          binding.memoryImage.setImageURI(uri);
-        } else {
-          Log.d("PhotoPicker", "No media selected");
-        }
-      });
 }
