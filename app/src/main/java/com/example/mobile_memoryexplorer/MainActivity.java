@@ -172,6 +172,8 @@ public class MainActivity extends AppCompatActivity {
   @Override
   public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    //TODO controllare che sia il permesso del gps entra anche con quello delle notifiche
+
     if (requestCode == 1) {
       if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 

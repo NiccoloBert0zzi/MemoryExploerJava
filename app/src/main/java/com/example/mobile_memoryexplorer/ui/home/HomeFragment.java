@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 
@@ -50,6 +51,7 @@ public class HomeFragment extends Fragment {
                            ViewGroup container, Bundle savedInstanceState) {
     binding = FragmentHomeBinding.inflate(inflater, container, false);
     View root = binding.getRoot();
+
     if (this.getContext() != null) {
       //start progress bar
       mySharedData = new MySharedData(this.getContext());
@@ -86,14 +88,12 @@ public class HomeFragment extends Fragment {
         for (DataSnapshot memorySnapshot : snapshot.getChildren()) {
           Memory m = memorySnapshot.getValue(Memory.class);
           if (!m.getCreator().equals(email) && m.isPublic()) {
-            if (filter_chosen != null) {
-              if (!filter_chosen.equals("Mondo")) {
-                if (getLocation(m.getLatitude(), m.getLongitude()).equals(filter_chosen)) {
-                  list.add(m);
-                }
-              } else {
+            if (!filter_chosen.equals("Mondo")) {
+              if (getLocation(m.getLatitude(), m.getLongitude()).equals(filter_chosen)) {
                 list.add(m);
               }
+            } else {
+              list.add(m);
             }
           }
         }
@@ -102,10 +102,11 @@ public class HomeFragment extends Fragment {
           Toast.makeText(ctx, "No memories found", Toast.LENGTH_SHORT).show();
         } else {
           if (binding != null) {
+            ResponsiveDimension responsiveDimension = new ResponsiveDimension(getActivity().getWindowManager());
             //set GridLayoutManager in recyclerView and show items in grid with two columns
-            binding.recyclerView.setLayoutManager(new GridLayoutManager(ctx, new ResponsiveDimension(getActivity().getWindowManager()).getResponsiveCollum()));
+            binding.recyclerView.setLayoutManager(new GridLayoutManager(ctx, responsiveDimension.getResponsiveCollum()));
             //set adapter ItemAdapter in recyclerView
-            binding.recyclerView.setAdapter(new MemoriesListAdapter(list, ctx, email, false));
+            binding.recyclerView.setAdapter(new MemoriesListAdapter(list, ctx, email, false,responsiveDimension));
           }
         }
         assert binding != null;

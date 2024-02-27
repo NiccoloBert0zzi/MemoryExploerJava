@@ -157,10 +157,11 @@ public class ProfileFragment extends Fragment {
           if (list.isEmpty()) {
             Toast.makeText(getContext(), "No memories found", Toast.LENGTH_SHORT).show();
           }
+          ResponsiveDimension responsiveDimension = new ResponsiveDimension(getActivity().getWindowManager());
           //set GridLayoutManager in recyclerView and show items in grid with two columns
-          binding.recyclerView.setLayoutManager(new GridLayoutManager(getContext(), new ResponsiveDimension(getActivity().getWindowManager()).getResponsiveCollum()));
+          binding.recyclerView.setLayoutManager(new GridLayoutManager(getContext(), responsiveDimension.getResponsiveCollum()));
           //set adapter ItemAdapter in recyclerView
-          binding.recyclerView.setAdapter(new MemoriesListAdapter(list, getContext(), email,true));
+          binding.recyclerView.setAdapter(new MemoriesListAdapter(list, getContext(), email,true,responsiveDimension));
         }
       }
 

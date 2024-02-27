@@ -54,7 +54,6 @@ public class StatisticsFragment extends Fragment {
     dbRef = FirebaseDatabase.getInstance().getReference("memories");
     mySharedData = new MySharedData(getContext());
     email = MySharedData.getEmail();
-
     filter.add("Mondo");
     prepareItemData();
 

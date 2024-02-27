@@ -21,11 +21,13 @@ import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.mobile_memoryexplorer.Database.AppDatabase;
 import com.example.mobile_memoryexplorer.Database.Favourite;
+import com.example.mobile_memoryexplorer.ResponsiveDimension;
 import com.example.mobile_memoryexplorer.ui.addMemory.Memory;
 import com.example.mobile_memoryexplorer.R;
 import com.example.mobile_memoryexplorer.ui.SingleMemory.SingleMemory;
@@ -36,12 +38,14 @@ public class MemoriesListAdapter extends RecyclerView.Adapter<MemoriesListAdapte
   Context context;
   private final String email;
   private static Boolean isProfile = false;
+  private final ResponsiveDimension responsiveDimension;
 
-  public MemoriesListAdapter(List<Memory> list, Context context, String email,Boolean isProfile) {
+  public MemoriesListAdapter(List<Memory> list, Context context, String email,Boolean isProfile, ResponsiveDimension responsiveDimension) {
     this.list = list;
     this.context = context;
     this.email = email;
     this.isProfile = isProfile;
+    this.responsiveDimension = responsiveDimension;
   }
 
   public static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -99,6 +103,8 @@ public class MemoriesListAdapter extends RecyclerView.Adapter<MemoriesListAdapte
     } catch (ParseException e) {
       throw new RuntimeException(e);
     }
+    holder.image.getLayoutParams().height = responsiveDimension.getResposniveDimension();
+    holder.image.getLayoutParams().width = responsiveDimension.getResposniveDimension();
     holder.title_tv.setText(list.get(position).getTitle());
     holder.image.setTag(list.get(position).getId());
     holder.favorite.setTag(list.get(position).getId());
