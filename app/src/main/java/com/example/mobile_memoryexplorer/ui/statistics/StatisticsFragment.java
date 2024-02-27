@@ -31,7 +31,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +51,6 @@ public class StatisticsFragment extends Fragment {
 
   public View onCreateView(@NonNull LayoutInflater inflater,
                            ViewGroup container, Bundle savedInstanceState) {
-
     binding = FragmentStatisticsBinding.inflate(inflater, container, false);
     View root = binding.getRoot();
 
@@ -80,7 +78,7 @@ public class StatisticsFragment extends Fragment {
     binding = null;
   }
 
-  //scarica dati dal db e prende le memories dell'utente
+  // Carica i dati dal database e ottiene le memorie dell'utente
   public void prepareItemData() {
     dbRef.addValueEventListener(new ValueEventListener() {
       @Override
@@ -101,29 +99,23 @@ public class StatisticsFragment extends Fragment {
 
       @Override
       public void onCancelled(@NonNull DatabaseError error) {
-        // calling on cancelled method when we receive
-        // any error or we are not able to get the data.
         Toast.makeText(getContext(), "Fail to get data.", Toast.LENGTH_SHORT).show();
       }
     });
-
   }
 
-  //scarica le location e li mette in una mappa con la chiave citta e il valore numero di votle visitata
+  // Scarica le posizioni e le mette in una mappa con la chiave città e il valore numero di volte visitata
   private void downloadData() {
     for (Memory m : list) {
       String key = getlocation(m.getLatitude(), m.getLongitude());
-      if (key == null)
+      if (key == null) {
         continue;
-      if (!filter.contains(key) && filter_chosen.equals("Mondo")) {
+      }
+      if (!filter_chosen.isEmpty() && !filter.contains(key) && filter_chosen.equals("Mondo")) {
         filter.add(key);
       }
-      if (filter_chosen != null && !filter_chosen.isEmpty()) {
-        if (locations.containsKey(key)) {
-          locations.put(key, locations.get(key) + 1);
-        } else {
-          locations.put(key, 1);
-        }
+      if (!filter_chosen.isEmpty()) {
+        locations.put(key, locations.getOrDefault(key, 0) + 1);
       }
       setupBarChart();
     }
@@ -132,25 +124,25 @@ public class StatisticsFragment extends Fragment {
     binding.autoCompleteTextView.setAdapter(adapterItem);
   }
 
-  //ritorna la citta in base alla latitudine e longitudine
+  // Ritorna la città in base alla latitudine e longitudine
   private String getlocation(String lat, String lon) {
     assert getContext() != null;
     Geocoder gcd = new Geocoder(getContext(), Locale.getDefault());
-    List<Address> addresses;
     try {
-      addresses = gcd.getFromLocation(Double.parseDouble(lat), Double.parseDouble(lon), 1);
-      if (addresses.size() > 0) {
+      List<Address> addresses = gcd.getFromLocation(Double.parseDouble(lat), Double.parseDouble(lon), 1);
+      if (!addresses.isEmpty()) {
+        Address address = addresses.get(0);
         if (filter_chosen != null && !filter_chosen.isEmpty()) {
           if (filter_chosen.equals("Mondo")) {
-            return addresses.get(0).getCountryName();
-          } else if (addresses.get(0).getCountryName().equals(filter_chosen)) {
-            return addresses.get(0).getAdminArea();
+            return address.getCountryName();
+          } else if (address.getCountryName().equals(filter_chosen)) {
+            return address.getAdminArea();
           }
         } else {
-          return addresses.get(0).getCountryName();
+          return address.getCountryName();
         }
       }
-    } catch (IOException e) {
+    } catch (IOException | NumberFormatException e) {
       throw new RuntimeException(e);
     }
     return null;
@@ -183,9 +175,10 @@ public class StatisticsFragment extends Fragment {
       @Override
       public void onValueSelected(Entry e, Highlight h) {
         PieEntry pe = (PieEntry) e;
-        String number = (int)e.getY() == 1 ? (int)e.getY()+" volta" : (int)e.getY()+" volte";
-        binding.info.setText("Hai visitato "+pe.getLabel()+" "+number);
+        String number = (int) e.getY() == 1 ? (int) e.getY() + " volta" : (int) e.getY() + " volte";
+        binding.info.setText("Hai visitato " + pe.getLabel() + " " + number);
       }
+
       @Override
       public void onNothingSelected() {
 

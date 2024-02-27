@@ -1,9 +1,5 @@
 package com.example.mobile_memoryexplorer.ui.SingleMemory;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
@@ -11,6 +7,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.mobile_memoryexplorer.Database.AppDatabase;
@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-
 public class SingleMemory extends AppCompatActivity {
   private DatabaseReference dbRef;
   private ActivitySingleMemoryBinding binding;
@@ -51,51 +50,37 @@ public class SingleMemory extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     binding = ActivitySingleMemoryBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
-    getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-    getSupportActionBar().setCustomView(R.layout.action_bar_layout);
+    setupActionBar();
 
     mySharedData = new MySharedData(this);
     email = MySharedData.getEmail();
 
     Bundle b = getIntent().getExtras();
-    String id = b.getString("id");
-    dbRef = FirebaseDatabase.getInstance().getReference("memories/" + id);
-    loadInfo();
+    if (b != null) {
+      String id = b.getString("id");
+      dbRef = FirebaseDatabase.getInstance().getReference("memories/" + id);
+      loadInfo();
 
-    binding.favorite.setOnClickListener(v -> {
-      AppDatabase appDb = AppDatabase.getInstance(this);
-      Favourite favourite = new Favourite(email, binding.favorite.getTag().toString());
-      // check if the memory is already in the favourite list
-      if (appDb.favouriteUserMemoryDao().checkMemories(email, binding.favorite.getTag().toString()) != null) {
-        appDb.favouriteUserMemoryDao().deleteTask(favourite);
-        Toast.makeText(this, m.getTitle() + " eliminato dai preferiti!", Toast.LENGTH_SHORT).show();
-      } else {
-        appDb.favouriteUserMemoryDao().insert(favourite);
-        Toast.makeText(this, m.getTitle() + " aggiunto ai preferiti!", Toast.LENGTH_SHORT).show();
-      }
-    });
+      binding.favorite.setOnClickListener(v -> toggleFavorite());
+    } else {
+      Toast.makeText(this, "Memory ID not provided", Toast.LENGTH_SHORT).show();
+      finish();
+    }
+  }
 
+  private void setupActionBar() {
+    getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+    getSupportActionBar().setCustomView(R.layout.action_bar_layout);
   }
 
   private void loadInfo() {
     dbRef.addValueEventListener(new ValueEventListener() {
       @Override
       public void onDataChange(@NonNull DataSnapshot snapshot) {
-        if(binding == null) return;
+        if (binding == null) return;
         m = snapshot.getValue(Memory.class);
         if (m != null) {
-          binding.title.setText(m.getTitle());
-          binding.description.setText(m.getDescription());
-          binding.favorite.setTag(m.getId());
-          if (m.getCreator().equals(email)) {
-            binding.favorite.setVisibility(View.GONE);
-          }
-          String placeholder = m.getDate();
-          binding.creatorDate.setText(placeholder);
-          Glide.with(binding.getRoot().getContext())
-              .load(Uri.parse(m.getImage()))
-              .into(binding.memoryImage);
-
+          updateUI();
         }
         try {
           openMap(Double.parseDouble(m.getLatitude()), Double.parseDouble(m.getLongitude()));
@@ -109,6 +94,32 @@ public class SingleMemory extends AppCompatActivity {
         Toast.makeText(SingleMemory.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
       }
     });
+  }
+
+  private void updateUI() {
+    binding.title.setText(m.getTitle());
+    binding.description.setText(m.getDescription());
+    binding.favorite.setTag(m.getId());
+    if (m.getCreator().equals(email)) {
+      binding.favorite.setVisibility(View.GONE);
+    }
+    binding.creatorDate.setText(m.getDate());
+    Glide.with(binding.getRoot().getContext())
+        .load(Uri.parse(m.getImage()))
+        .into(binding.memoryImage);
+  }
+
+  private void toggleFavorite() {
+    AppDatabase appDb = AppDatabase.getInstance(this);
+    Favourite favourite = new Favourite(email, binding.favorite.getTag().toString());
+    // check if the memory is already in the favourite list
+    if (appDb.favouriteUserMemoryDao().checkMemories(email, binding.favorite.getTag().toString()) != null) {
+      appDb.favouriteUserMemoryDao().deleteTask(favourite);
+      showToast(m.getTitle() + " eliminato dai preferiti!");
+    } else {
+      appDb.favouriteUserMemoryDao().insert(favourite);
+      showToast(m.getTitle() + " aggiunto ai preferiti!");
+    }
   }
 
   private void openMap(Double lat, Double lon) throws IOException {
@@ -126,7 +137,7 @@ public class SingleMemory extends AppCompatActivity {
 
     Marker startMarker = new Marker(mapView);
     startMarker.setIcon(new BitmapDrawable(getResources(), new MyMarker(this).getSmallMarker()));
-    if(setLocation(lat, lon) != null) {
+    if (setLocation(lat, lon) != null) {
       startMarker.setTitle(setLocation(lat, lon).getCountryName());
       startMarker.setSnippet(setLocation(lat, lon).getLocality());
     }
@@ -134,6 +145,7 @@ public class SingleMemory extends AppCompatActivity {
     startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
     mapView.getOverlays().add(startMarker);
   }
+
   private Address setLocation(Double lat, Double lon) throws IOException {
     Geocoder gcd = new Geocoder(this, Locale.getDefault());
     List<Address> addresses;
@@ -144,4 +156,7 @@ public class SingleMemory extends AppCompatActivity {
     return null;
   }
 
+  private void showToast(String message) {
+    Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+  }
 }

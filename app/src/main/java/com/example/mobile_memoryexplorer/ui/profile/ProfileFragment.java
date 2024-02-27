@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 public class ProfileFragment extends Fragment {
 
   private FragmentProfileBinding binding;
@@ -142,7 +141,7 @@ public class ProfileFragment extends Fragment {
     dbRef.addValueEventListener(new ValueEventListener() {
       @Override
       public void onDataChange(@NonNull DataSnapshot snapshot) {
-        if(binding == null) return;
+        if (binding == null) return;
         list.clear();
         for (DataSnapshot memorySnapshot : snapshot.getChildren()) {
           Memory m = memorySnapshot.getValue(Memory.class);
@@ -155,13 +154,13 @@ public class ProfileFragment extends Fragment {
         }
         if (binding != null) {
           if (list.isEmpty()) {
-            Toast.makeText(getContext(), "No memories found", Toast.LENGTH_SHORT).show();
+            showToast("No memories found");
           }
           ResponsiveDimension responsiveDimension = new ResponsiveDimension(getActivity().getWindowManager());
           //set GridLayoutManager in recyclerView and show items in grid with two columns
           binding.recyclerView.setLayoutManager(new GridLayoutManager(getContext(), responsiveDimension.getResponsiveCollum()));
           //set adapter ItemAdapter in recyclerView
-          binding.recyclerView.setAdapter(new MemoriesListAdapter(list, getContext(), email,true,responsiveDimension));
+          binding.recyclerView.setAdapter(new MemoriesListAdapter(list, getContext(), email, true, responsiveDimension));
         }
       }
 
@@ -169,9 +168,14 @@ public class ProfileFragment extends Fragment {
       public void onCancelled(@NonNull DatabaseError error) {
         // calling on cancelled method when we receive
         // any error or we are not able to get the data.
-        Toast.makeText(getContext(), "Fail to get data.", Toast.LENGTH_SHORT).show();
+        showToast("Fail to get data.");
       }
     });
+  }
 
+  private void showToast(String message) {
+    if (getContext() != null) {
+      Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    }
   }
 }

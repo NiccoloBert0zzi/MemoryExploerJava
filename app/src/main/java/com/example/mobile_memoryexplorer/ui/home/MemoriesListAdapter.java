@@ -1,6 +1,5 @@
 package com.example.mobile_memoryexplorer.ui.home;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -13,15 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -32,25 +23,32 @@ import com.example.mobile_memoryexplorer.ui.addMemory.Memory;
 import com.example.mobile_memoryexplorer.R;
 import com.example.mobile_memoryexplorer.ui.SingleMemory.SingleMemory;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
 public class MemoriesListAdapter extends RecyclerView.Adapter<MemoriesListAdapter.MyViewHolder> {
 
   private final List<Memory> list;
-  Context context;
+  private final Context context;
   private final String email;
   private static Boolean isProfile = false;
   private final ResponsiveDimension responsiveDimension;
 
-  public MemoriesListAdapter(List<Memory> list, Context context, String email,Boolean isProfile, ResponsiveDimension responsiveDimension) {
+  public MemoriesListAdapter(List<Memory> list, Context context, String email, Boolean isProfile, ResponsiveDimension responsiveDimension) {
     this.list = list;
     this.context = context;
     this.email = email;
-    this.isProfile = isProfile;
+    MemoriesListAdapter.isProfile = isProfile;
     this.responsiveDimension = responsiveDimension;
   }
 
   public static class MyViewHolder extends RecyclerView.ViewHolder {
 
-    public TextView title_tv,date_tv,my_memory_tv,my_favorite_tv;
+    public TextView title_tv, date_tv, my_memory_tv, my_favorite_tv;
     public ImageView image, favorite;
 
     public MyViewHolder(View view) {
@@ -62,7 +60,7 @@ public class MemoriesListAdapter extends RecyclerView.Adapter<MemoriesListAdapte
       image = view.findViewById(R.id.imgVersionName);
       favorite = view.findViewById(R.id.favorite);
 
-      if(isProfile){
+      if (isProfile) {
         favorite.setVisibility(View.GONE);
       }
     }
@@ -77,51 +75,80 @@ public class MemoriesListAdapter extends RecyclerView.Adapter<MemoriesListAdapte
 
   @Override
   public void onBindViewHolder(final MyViewHolder holder, final int position) {
-    setUpMymemory(holder, position);
+    setUpMemory(holder, position);
+    setClickListener(holder);
+    startAnimation(holder.itemView);
+  }
+
+  private void startAnimation(View view) {
+    view.startAnimation(AnimationUtils.loadAnimation(context, R.anim.animation));
+  }
+
+  private void setClickListener(final MyViewHolder holder) {
     holder.itemView.setOnClickListener(view -> {
-          Intent singleMemory = new Intent(context, SingleMemory.class);
-          Bundle b = new Bundle();
-          b.putString("id", holder.image.getTag().toString()); //Your id
-          singleMemory.putExtras(b); //Put your id to your next Intent
-          context.startActivity(singleMemory);
-        });
-    holder.itemView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.animation));
+      Intent singleMemory = new Intent(context, SingleMemory.class);
+      Bundle b = new Bundle();
+      b.putString("id", holder.image.getTag().toString());
+      singleMemory.putExtras(b);
+      context.startActivity(singleMemory);
+    });
   }
 
   @Override
   public int getItemCount() {
     return list.size();
   }
-  private void setUpMymemory(final MyViewHolder holder, final int position){
+
+  private void setUpMemory(final MyViewHolder holder, final int position) {
     Calendar calendar = Calendar.getInstance();
     try {
       SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.ITALIAN);
       Date date = sdf.parse(list.get(position).getDate());
-      calendar.setTime(date);
-      int year = calendar.get(Calendar.YEAR);
-      holder.date_tv.setText(String.valueOf(year));
+      if (date != null) {
+        calendar.setTime(date);
+        int year = calendar.get(Calendar.YEAR);
+        holder.date_tv.setText(String.valueOf(year));
+      }
     } catch (ParseException e) {
       throw new RuntimeException(e);
     }
-    holder.image.getLayoutParams().height = responsiveDimension.getResposniveDimension();
-    holder.image.getLayoutParams().width = responsiveDimension.getResposniveDimension();
+
+    setImageViewDimensions(holder.image);
     holder.title_tv.setText(list.get(position).getTitle());
     holder.image.setTag(list.get(position).getId());
     holder.favorite.setTag(list.get(position).getId());
+
+    loadImageWithGlide(holder.image, list.get(position).getImage());
+    setFavoriteClickListener(holder, position);
+  }
+
+  private void setImageViewDimensions(ImageView imageView) {
+    imageView.getLayoutParams().height = responsiveDimension.getResposniveDimension();
+    imageView.getLayoutParams().width = responsiveDimension.getResposniveDimension();
+  }
+
+  private void loadImageWithGlide(ImageView imageView, String imageUrl) {
     Glide.with(context)
-        .load(Uri.parse(list.get(position).getImage()))
-        .into(holder.image);
+        .load(Uri.parse(imageUrl))
+        .into(imageView);
+  }
+
+  private void setFavoriteClickListener(final MyViewHolder holder, final int position) {
     holder.favorite.setOnClickListener(view -> {
       AppDatabase appDb = AppDatabase.getInstance(context);
       Favourite favourite = new Favourite(email, holder.favorite.getTag().toString());
-      // check if the memory is already in the favourite list
+
       if (appDb.favouriteUserMemoryDao().checkMemories(email, holder.favorite.getTag().toString()) != null) {
         appDb.favouriteUserMemoryDao().deleteTask(favourite);
-        Toast.makeText(context, list.get(position).getTitle() + " eliminato dai preferiti!", Toast.LENGTH_SHORT).show();
+        showToast(list.get(position).getTitle() + " eliminato dai preferiti!");
       } else {
         appDb.favouriteUserMemoryDao().insert(favourite);
-        Toast.makeText(context, list.get(position).getTitle() + " aggiunto ai preferiti!", Toast.LENGTH_SHORT).show();
+        showToast(list.get(position).getTitle() + " aggiunto ai preferiti!");
       }
     });
+  }
+
+  private void showToast(String message) {
+    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
   }
 }
