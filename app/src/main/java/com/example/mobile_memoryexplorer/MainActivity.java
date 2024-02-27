@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.WindowManager;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -51,6 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+  private final int REQUEST_CODE_POSITION = 101;
   private LocationRequest locationRequest;
   public static double latitude, longitude;
   String email;
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
     b.putString("id", id); //Your id
     singleMemory.putExtras(b);
 
-    PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, singleMemory, PendingIntent.FLAG_MUTABLE);
+    PendingIntent pendingIntent = PendingIntent.getActivity(this, REQUEST_CODE_POSITION, singleMemory, PendingIntent.FLAG_MUTABLE);
     builder.setContentIntent(pendingIntent);
     NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -172,15 +172,11 @@ public class MainActivity extends AppCompatActivity {
   @Override
   public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    //TODO controllare che sia il permesso del gps entra anche con quello delle notifiche
 
-    if (requestCode == 1) {
+    if (requestCode == REQUEST_CODE_POSITION && grantResults.length > 0) {
       if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
         if (isGPSEnabled()) {
-
           getCurrentLocation();
-
         } else {
           turnOnGPS();
         }
@@ -193,7 +189,6 @@ public class MainActivity extends AppCompatActivity {
     super.onActivityResult(requestCode, resultCode, data);
     if (requestCode == 2) {
       if (resultCode == Activity.RESULT_OK) {
-
         getCurrentLocation();
       }
     }
@@ -225,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
       }
 
     } else {
-      requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+      requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE_POSITION);
     }
   }
 

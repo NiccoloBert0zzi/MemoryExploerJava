@@ -28,7 +28,7 @@ import com.example.mobile_memoryexplorer.databinding.ActivityLoginBinding;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class Login extends AppCompatActivity {
-  private static final int REQUEST_CODE = 101010;
+  private static final int REQUEST_CODE_NOTIFICATION = 101010;
 
   private FirebaseAuth auth;
   private ActivityLoginBinding binding;
@@ -54,7 +54,7 @@ public class Login extends AppCompatActivity {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
       if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_CODE);
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_CODE_NOTIFICATION);
       }
     }
 
