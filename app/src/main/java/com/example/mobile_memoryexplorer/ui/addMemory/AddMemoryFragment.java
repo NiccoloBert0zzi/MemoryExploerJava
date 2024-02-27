@@ -2,6 +2,7 @@ package com.example.mobile_memoryexplorer.ui.addMemory;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 
@@ -126,7 +127,15 @@ public class AddMemoryFragment extends Fragment {
     });
 
     binding.memoryImage.setOnClickListener(v -> {
-      openGallery();
+      try {
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+          requestPermissionLauncher.launch(android.Manifest.permission.READ_MEDIA_IMAGES);
+        } else {
+          openGallery();
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     });
 
     binding.isPublic.setOnCheckedChangeListener((buttonView, isChecked) ->
@@ -135,22 +144,27 @@ public class AddMemoryFragment extends Fragment {
   }
 
   private void openGallery() {
-    Intent gallery = new Intent(Intent.ACTION_PICK);
-    gallery.setType("image/*");
-    gallery.setAction(Intent.ACTION_GET_CONTENT);
-    imageURI = gallery.getData();
-    folderResult.launch(gallery);
+    Intent iGallery = new Intent(Intent.ACTION_PICK);
+    iGallery.setType("image/*");
+    iGallery.setData(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+    folderResult.launch(iGallery);
   }
-
-  ActivityResultLauncher<Intent> folderResult = registerForActivityResult(
-      new ActivityResultContracts.StartActivityForResult(),
+  private ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
+      new ActivityResultContracts.RequestPermission(),
+      result -> {
+        if (result) {
+          openGallery();
+        } else {
+          Toast.makeText(getContext(), "Permission denied", Toast.LENGTH_SHORT).show();
+        }
+      }
+  );
+  ActivityResultLauncher<Intent> folderResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
       new ActivityResultCallback<ActivityResult>() {
         @Override
         public void onActivityResult(ActivityResult result) {
           if (result.getResultCode() == Activity.RESULT_OK) {
-            // There are no request codes
-            Intent data = result.getData();
-            imageURI = data.getData();
+            imageURI = result.getData().getData();
             binding.memoryImage.setImageURI(imageURI);
           }
         }
