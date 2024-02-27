@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -74,14 +73,9 @@ public class MemoriesListAdapter extends RecyclerView.Adapter<MemoriesListAdapte
   }
 
   @Override
-  public void onBindViewHolder(final MyViewHolder holder, final int position) {
+  public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
     setUpMemory(holder, position);
     setClickListener(holder);
-    startAnimation(holder.itemView);
-  }
-
-  private void startAnimation(View view) {
-    view.startAnimation(AnimationUtils.loadAnimation(context, R.anim.animation));
   }
 
   private void setClickListener(final MyViewHolder holder) {

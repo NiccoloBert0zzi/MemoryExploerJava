@@ -19,10 +19,6 @@ import android.os.Looper;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -63,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
   MySharedData mySharedData;
   private final List<Memory> list = new ArrayList<>();
   Runnable runnable;
-  private List<String> cacheNotifications;
+  private static List<String> cacheNotifications = new ArrayList<>();
 
   @SuppressLint("MissingPermission")
   @Override
@@ -81,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
     NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
     NavigationUI.setupWithNavController(binding.navView, navController);
 
-    cacheNotifications = new ArrayList<>();
     mySharedData = new MySharedData(this);
     email = MySharedData.getEmail();
     dbRef = FirebaseDatabase.getInstance().getReference("memories");
@@ -177,19 +172,16 @@ public class MainActivity extends AppCompatActivity {
   @Override
   public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-    switch (requestCode) {
-      case REQUEST_CODE_POSITION:
-        if (grantResults.length > 0) {
-          if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            if (isGPSEnabled()) {
-              getCurrentLocation();
-            } else {
-              turnOnGPS();
-            }
+    if (requestCode == REQUEST_CODE_POSITION) {
+      if (grantResults.length > 0) {
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+          if (isGPSEnabled()) {
+            getCurrentLocation();
+          } else {
+            turnOnGPS();
           }
         }
-        break;
+      }
     }
   }
 
