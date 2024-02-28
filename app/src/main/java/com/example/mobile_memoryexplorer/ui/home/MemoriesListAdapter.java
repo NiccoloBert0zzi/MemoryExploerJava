@@ -17,10 +17,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.mobile_memoryexplorer.Database.AppDatabase;
 import com.example.mobile_memoryexplorer.Database.Favourite;
-import com.example.mobile_memoryexplorer.ResponsiveDimension;
-import com.example.mobile_memoryexplorer.ui.addMemory.Memory;
 import com.example.mobile_memoryexplorer.R;
+import com.example.mobile_memoryexplorer.ResponsiveDimension;
 import com.example.mobile_memoryexplorer.ui.SingleMemory.SingleMemory;
+import com.example.mobile_memoryexplorer.ui.addMemory.Memory;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -110,8 +110,7 @@ public class MemoriesListAdapter extends RecyclerView.Adapter<MemoriesListAdapte
     setImageViewDimensions(holder.image);
     holder.title_tv.setText(list.get(position).getTitle());
     holder.image.setTag(list.get(position).getId());
-    holder.favorite.setTag(list.get(position).getId());
-
+    setupFavourite(holder, position);
     loadImageWithGlide(holder.image, list.get(position).getImage());
     setFavoriteClickListener(holder, position);
   }
@@ -134,14 +133,24 @@ public class MemoriesListAdapter extends RecyclerView.Adapter<MemoriesListAdapte
 
       if (appDb.favouriteUserMemoryDao().checkMemories(email, holder.favorite.getTag().toString()) != null) {
         appDb.favouriteUserMemoryDao().deleteTask(favourite);
+        holder.favorite.setImageResource(R.drawable.ic_baseline_favorite_empty);
         showToast(list.get(position).getTitle() + " eliminato dai preferiti!");
       } else {
+        holder.favorite.setImageResource(R.drawable.ic_baseline_favorite_full);
         appDb.favouriteUserMemoryDao().insert(favourite);
         showToast(list.get(position).getTitle() + " aggiunto ai preferiti!");
       }
     });
   }
-
+  private void setupFavourite(final MyViewHolder holder, final int position) {
+    holder.favorite.setTag(list.get(position).getId());
+    AppDatabase appDb = AppDatabase.getInstance(context);
+    if (appDb.favouriteUserMemoryDao().checkMemories(email, holder.favorite.getTag().toString()) != null) {
+      holder.favorite.setImageResource(R.drawable.ic_baseline_favorite_full);
+    } else {
+      holder.favorite.setImageResource(R.drawable.ic_baseline_favorite_empty);
+    }
+  }
   private void showToast(String message) {
     Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
   }

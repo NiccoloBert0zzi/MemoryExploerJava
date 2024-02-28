@@ -52,6 +52,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/password_tv"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        app:passwordToggleEnabled="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
@@ -63,13 +64,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/email_tv"
-        app:startIconDrawable="@drawable/ic_baseline_account_circle_24">
+        app:startIconDrawable="@drawable/ic_baseline_lock_24">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/passsword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textEmailAddress" />
+            android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
     <CheckBox
         android:id="@+id/remember_me"

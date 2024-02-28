@@ -45,7 +45,7 @@ public class SingleMemory extends AppCompatActivity {
   String email;
   MySharedData mySharedData;
   Memory m;
-
+  AppDatabase appDb;
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -53,6 +53,7 @@ public class SingleMemory extends AppCompatActivity {
     setContentView(binding.getRoot());
     setupActionBar();
 
+    appDb = AppDatabase.getInstance(this);
     mySharedData = new MySharedData(this);
     email = MySharedData.getEmail();
 
@@ -66,6 +67,14 @@ public class SingleMemory extends AppCompatActivity {
     } else {
       Toast.makeText(this, "Memory ID not provided", Toast.LENGTH_SHORT).show();
       finish();
+    }
+  }
+
+  private void setupFavourite() {
+    if (appDb.favouriteUserMemoryDao().checkMemories(email, binding.favorite.getTag().toString()) != null) {
+      binding.favorite.setImageResource(R.drawable.ic_baseline_favorite_full);
+    } else {
+      binding.favorite.setImageResource(R.drawable.ic_baseline_favorite_empty);
     }
   }
 
@@ -105,6 +114,7 @@ public class SingleMemory extends AppCompatActivity {
     if (m.getCreator().equals(email)) {
       binding.favorite.setVisibility(View.GONE);
     }
+    setupFavourite();
     binding.creatorDate.setText(m.getDate());
     Glide.with(binding.getRoot().getContext())
         .load(Uri.parse(m.getImage()))
@@ -112,13 +122,14 @@ public class SingleMemory extends AppCompatActivity {
   }
 
   private void toggleFavorite() {
-    AppDatabase appDb = AppDatabase.getInstance(this);
     Favourite favourite = new Favourite(email, binding.favorite.getTag().toString());
     // check if the memory is already in the favourite list
     if (appDb.favouriteUserMemoryDao().checkMemories(email, binding.favorite.getTag().toString()) != null) {
       appDb.favouriteUserMemoryDao().deleteTask(favourite);
+      binding.favorite.setImageResource(R.drawable.ic_baseline_favorite_empty);
       showToast(m.getTitle() + " eliminato dai preferiti!");
     } else {
+      binding.favorite.setImageResource(R.drawable.ic_baseline_favorite_full);
       appDb.favouriteUserMemoryDao().insert(favourite);
       showToast(m.getTitle() + " aggiunto ai preferiti!");
     }
