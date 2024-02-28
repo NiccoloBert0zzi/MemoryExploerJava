@@ -27,7 +27,7 @@ public class ProfileViewModel extends ViewModel {
     users.setValue(db.profileDao().getAll());
     mySharedData = new MySharedData(context);
     email = MySharedData.getEmail();
-    for (Profile user : users.getValue()) {
+    for (Profile user : Objects.requireNonNull(users.getValue())) {
       if (Objects.equals(user.getEmail(), email)) {
         profile = user;
       }

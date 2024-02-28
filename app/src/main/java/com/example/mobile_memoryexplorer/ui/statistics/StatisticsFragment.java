@@ -87,6 +87,7 @@ public class StatisticsFragment extends Fragment {
         list.clear();
         for (DataSnapshot memorySnapshot : snapshot.getChildren()) {
           Memory m = memorySnapshot.getValue(Memory.class);
+          assert m != null;
           if (m.getCreator().equals(email))
             list.add(m);
         }
@@ -130,6 +131,7 @@ public class StatisticsFragment extends Fragment {
     Geocoder gcd = new Geocoder(getContext(), Locale.getDefault());
     try {
       List<Address> addresses = gcd.getFromLocation(Double.parseDouble(lat), Double.parseDouble(lon), 1);
+      assert addresses != null;
       if (!addresses.isEmpty()) {
         Address address = addresses.get(0);
         if (filter_chosen != null && !filter_chosen.isEmpty()) {

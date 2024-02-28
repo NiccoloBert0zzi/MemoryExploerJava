@@ -18,7 +18,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
@@ -34,11 +33,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.Objects;
 import java.util.concurrent.Executor;
 
 public class Login extends AppCompatActivity {
   private static final int REQUEST_CODE_NOTIFICATION = 101010;
-  private static final String TAG = "LoginActivity";
 
   private FirebaseAuth auth;
   private ActivityLoginBinding binding;
@@ -67,7 +66,7 @@ public class Login extends AppCompatActivity {
   }
 
   private void setupActionBar() {
-    getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+    Objects.requireNonNull(getSupportActionBar()).setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
     getSupportActionBar().setCustomView(R.layout.action_bar_layout);
   }
 
@@ -112,8 +111,8 @@ public class Login extends AppCompatActivity {
 
   private void setupLoginButton() {
     binding.login.setOnClickListener(v -> {
-      String email = binding.email.getText().toString();
-      String password = binding.passsword.getText().toString();
+      String email = Objects.requireNonNull(binding.email.getText()).toString();
+      String password = Objects.requireNonNull(binding.passsword.getText()).toString();
       if (email.isEmpty() || password.isEmpty()) {
         Toast.makeText(this, "Inserisci email e password", Toast.LENGTH_SHORT).show();
       } else {
@@ -151,7 +150,7 @@ public class Login extends AppCompatActivity {
       @Override
       public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
         super.onAuthenticationSucceeded(result);
-        fingerprintLogIn(binding.email.getText().toString());
+        fingerprintLogIn(Objects.requireNonNull(binding.email.getText()).toString());
       }
     });
 
@@ -166,17 +165,16 @@ public class Login extends AppCompatActivity {
     if (task.isSuccessful()) {
       AppDatabase appDb = AppDatabase.getInstance(Login.this);
       if (appDb.profileDao().getProfile(email) == null) {
-        Profile profile = new Profile(email, task.getResult().getUser().getDisplayName(), task.getResult().getUser().getPhotoUrl().toString());
+        Profile profile = new Profile(email, Objects.requireNonNull(task.getResult().getUser()).getDisplayName(), Objects.requireNonNull(task.getResult().getUser().getPhotoUrl()).toString());
         appDb.profileDao().insert(profile);
       }
       startHome(email);
     } else {
-      handleAuthenticationFailure(task);
+      handleAuthenticationFailure();
     }
   }
 
-  private void handleAuthenticationFailure(@NonNull Task<AuthResult> task) {
-    Log.w(TAG, "signInWithEmail:failure", task.getException());
+  private void handleAuthenticationFailure() {
     binding.progressBar.setVisibility(View.GONE);
     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show();

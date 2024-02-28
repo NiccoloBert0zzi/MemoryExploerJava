@@ -1,5 +1,6 @@
 package com.example.mobile_memoryexplorer.ui.profile;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,12 +23,12 @@ import com.bumptech.glide.Glide;
 import com.example.mobile_memoryexplorer.Auth.Login;
 import com.example.mobile_memoryexplorer.Database.AppDatabase;
 import com.example.mobile_memoryexplorer.Database.Favourite;
-import com.example.mobile_memoryexplorer.ResponsiveDimension;
-import com.example.mobile_memoryexplorer.ui.home.MemoriesListAdapter;
-import com.example.mobile_memoryexplorer.ui.addMemory.Memory;
 import com.example.mobile_memoryexplorer.MySharedData;
 import com.example.mobile_memoryexplorer.R;
+import com.example.mobile_memoryexplorer.ResponsiveDimension;
 import com.example.mobile_memoryexplorer.databinding.FragmentProfileBinding;
+import com.example.mobile_memoryexplorer.ui.addMemory.Memory;
+import com.example.mobile_memoryexplorer.ui.home.MemoriesListAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -48,13 +49,14 @@ public class ProfileFragment extends Fragment {
   private static SpannableString m_memory_span, m_favorite_span;
   static Boolean holderState = false;
 
+  @SuppressLint("SetTextI18n")
   public View onCreateView(@NonNull LayoutInflater inflater,
                            ViewGroup container, Bundle savedInstanceState) {
     ProfileViewModel profileViewModel =
         new ViewModelProvider(this).get(ProfileViewModel.class);
     profileViewModel.loadDb(this.getContext());
 
-    mySharedData = new MySharedData(getContext());
+    mySharedData = new MySharedData(requireContext());
     email = MySharedData.getEmail();
     binding = FragmentProfileBinding.inflate(inflater, container, false);
 
@@ -94,7 +96,7 @@ public class ProfileFragment extends Fragment {
     });
 
     binding.progressBar.setVisibility(RelativeLayout.VISIBLE);
-    getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+    requireActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
         WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
     dbRef = FirebaseDatabase.getInstance().getReference("memories");
@@ -110,11 +112,11 @@ public class ProfileFragment extends Fragment {
         binding.profileImage.setImageResource(R.drawable.ic_baseline_account_circle_24);
       }
       binding.progressBar.setVisibility(View.GONE);
-      getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+      requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     });
     //logout
     binding.buttonLogout.setOnClickListener(v -> {
-      MySharedData mySharedData = new MySharedData(this.getContext());
+      MySharedData mySharedData = new MySharedData(this.requireContext());
       mySharedData.setSharedpreferences("remember", "false");
       //start login activity
       Intent loginpage = new Intent(this.getContext(), Login.class);
@@ -145,18 +147,21 @@ public class ProfileFragment extends Fragment {
         list.clear();
         for (DataSnapshot memorySnapshot : snapshot.getChildren()) {
           Memory m = memorySnapshot.getValue(Memory.class);
+          assert m != null;
           if (holderState) {
             //se il memory è tra i preferiti
             if (finalFav_id.contains(m.getId()))
               list.add(m);
-          } else if (m.getCreator().equals(email) && !holderState)
-            list.add(m);
+          } else {
+            if (m.getCreator().equals(email) && !holderState)
+              list.add(m);
+          }
         }
         if (binding != null) {
           if (list.isEmpty()) {
             showToast("No memories found");
           }
-          ResponsiveDimension responsiveDimension = new ResponsiveDimension(getActivity().getWindowManager());
+          ResponsiveDimension responsiveDimension = new ResponsiveDimension(requireActivity().getWindowManager());
           //set GridLayoutManager in recyclerView and show items in grid with two columns
           binding.recyclerView.setLayoutManager(new GridLayoutManager(getContext(), responsiveDimension.getResponsiveCollum()));
           //set adapter ItemAdapter in recyclerView

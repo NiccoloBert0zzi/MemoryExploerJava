@@ -37,6 +37,7 @@ import org.osmdroid.views.overlay.Marker;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class SingleMemory extends AppCompatActivity {
   private DatabaseReference dbRef;
@@ -69,7 +70,7 @@ public class SingleMemory extends AppCompatActivity {
   }
 
   private void setupActionBar() {
-    getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+    Objects.requireNonNull(getSupportActionBar()).setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
     getSupportActionBar().setCustomView(R.layout.action_bar_layout);
   }
 
@@ -83,6 +84,7 @@ public class SingleMemory extends AppCompatActivity {
           updateUI();
         }
         try {
+          assert m != null;
           openMap(Double.parseDouble(m.getLatitude()), Double.parseDouble(m.getLongitude()));
         } catch (IOException e) {
           throw new RuntimeException(e);
@@ -138,8 +140,8 @@ public class SingleMemory extends AppCompatActivity {
     Marker startMarker = new Marker(mapView);
     startMarker.setIcon(new BitmapDrawable(getResources(), new MyMarker(this).getSmallMarker()));
     if (setLocation(lat, lon) != null) {
-      startMarker.setTitle(setLocation(lat, lon).getCountryName());
-      startMarker.setSnippet(setLocation(lat, lon).getLocality());
+      startMarker.setTitle(Objects.requireNonNull(setLocation(lat, lon)).getCountryName());
+      startMarker.setSnippet(Objects.requireNonNull(setLocation(lat, lon)).getLocality());
     }
     startMarker.setPosition(currentLocation);
     startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
@@ -150,6 +152,7 @@ public class SingleMemory extends AppCompatActivity {
     Geocoder gcd = new Geocoder(this, Locale.getDefault());
     List<Address> addresses;
     addresses = gcd.getFromLocation(lat, lon, 1);
+    assert addresses != null;
     if (addresses.size() > 0) {
       return addresses.get(0);
     }

@@ -26,9 +26,6 @@
         android:theme="@style/Theme.Mobile_MemoryExplorer"
         tools:targetApi="31">
         <activity
-            android:name=".Database.Profile"
-            android:exported="false" />
-        <activity
             android:name=".ui.SingleMemory.SingleMemory"
             android:exported="false" />
         <activity

@@ -1,5 +1,7 @@
 package com.example.mobile_memoryexplorer.ui.addMemory;
 
+import androidx.annotation.NonNull;
+
 public class Memory {
   public Memory(String id, String creator, String title, String description, String date, String latitude, String longitude, String image,Boolean isPublic) {
     this.title = title;
@@ -67,6 +69,7 @@ public class Memory {
 
   private boolean isPublic;
 
+  @NonNull
   @Override
   public String toString() {
     return "Memory{" +

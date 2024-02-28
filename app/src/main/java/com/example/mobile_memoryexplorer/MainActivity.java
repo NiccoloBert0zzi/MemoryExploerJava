@@ -49,6 +49,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
   private final int REQUEST_CODE_POSITION = 101;
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
   MySharedData mySharedData;
   private final List<Memory> list = new ArrayList<>();
   Runnable runnable;
-  private static List<String> cacheNotifications = new ArrayList<>();
+  private static final List<String> cacheNotifications = new ArrayList<>();
 
   @SuppressLint("MissingPermission")
   @Override
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
     com.example.mobile_memoryexplorer.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
-    getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+    Objects.requireNonNull(getSupportActionBar()).setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
     getSupportActionBar().setCustomView(R.layout.action_bar_layout);
     AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
         R.id.navigation_home, R.id.navigation_addmemory, R.id.navigation_profile, R.id.navigation_statistics)
@@ -151,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
         list.clear();
         for (DataSnapshot memorySnapshot : snapshot.getChildren()) {
           Memory m = memorySnapshot.getValue(Memory.class);
+          assert m != null;
           if (m.getCreator().equals(email)) {
             list.add(m);
           }

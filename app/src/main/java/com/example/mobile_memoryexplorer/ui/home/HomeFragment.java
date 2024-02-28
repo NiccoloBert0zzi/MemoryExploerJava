@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 
@@ -79,14 +80,15 @@ public class HomeFragment extends Fragment {
       public void onDataChange(@NonNull DataSnapshot snapshot) {
         if (binding == null) return;
         binding.progressBar.setVisibility(RelativeLayout.VISIBLE);
-        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+        requireActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
             WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         list.clear();
 
         for (DataSnapshot memorySnapshot : snapshot.getChildren()) {
           Memory m = memorySnapshot.getValue(Memory.class);
+          assert m != null;
           if (!m.getCreator().equals(email) && m.isPublic() &&
-              (filter_chosen.equals("Mondo") || getLocation(m.getLatitude(), m.getLongitude()).equals(filter_chosen))) {
+              (filter_chosen.equals("Mondo") || Objects.requireNonNull(getLocation(m.getLatitude(), m.getLongitude())).equals(filter_chosen))) {
             list.add(m);
           }
         }
@@ -97,7 +99,7 @@ public class HomeFragment extends Fragment {
           Toast.makeText(ctx, "No memories found", Toast.LENGTH_SHORT).show();
         } else {
           if (binding != null) {
-            ResponsiveDimension responsiveDimension = new ResponsiveDimension(getActivity().getWindowManager());
+            ResponsiveDimension responsiveDimension = new ResponsiveDimension(requireActivity().getWindowManager());
             binding.recyclerView.setLayoutManager(new GridLayoutManager(ctx, responsiveDimension.getResponsiveCollum()));
             binding.recyclerView.setAdapter(new MemoriesListAdapter(list, ctx, email, false, responsiveDimension));
           }
@@ -105,7 +107,7 @@ public class HomeFragment extends Fragment {
 
         if (binding != null) {
           binding.progressBar.setVisibility(View.GONE);
-          getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+          requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         }
       }
 

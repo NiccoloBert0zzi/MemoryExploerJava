@@ -1,6 +1,5 @@
 package com.example.mobile_memoryexplorer;
 
-import android.content.Context;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
@@ -11,8 +10,7 @@ public class ResponsiveDimension {
   public ResponsiveDimension(WindowManager wd) {
     DisplayMetrics displayMetrics = new DisplayMetrics();
     wd.getDefaultDisplay().getMetrics(displayMetrics);
-    int width = displayMetrics.widthPixels;
-    this.width = width;
+    this.width = displayMetrics.widthPixels;
 
   }
 
