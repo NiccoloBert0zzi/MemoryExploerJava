@@ -118,6 +118,7 @@ public class ProfileFragment extends Fragment {
     binding.buttonLogout.setOnClickListener(v -> {
       MySharedData mySharedData = new MySharedData(this.requireContext());
       mySharedData.setSharedpreferences("remember", "false");
+      mySharedData.setSharedpreferences("email", null);
       //start login activity
       Intent loginpage = new Intent(this.getContext(), Login.class);
       loginpage.setFlags(loginpage.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);

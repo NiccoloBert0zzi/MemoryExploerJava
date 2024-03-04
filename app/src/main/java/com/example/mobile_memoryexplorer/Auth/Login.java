@@ -205,7 +205,7 @@ public class Login extends AppCompatActivity {
   @Override
   protected void onResume() {
     super.onResume();
-    if (MySharedData.getRemember().equals("true")) {
+    if (!MySharedData.getEmail().isEmpty() || MySharedData.getRemember().equals("true")) {
       Intent homePage = new Intent(this, MainActivity.class);
       startActivity(homePage);
     }
