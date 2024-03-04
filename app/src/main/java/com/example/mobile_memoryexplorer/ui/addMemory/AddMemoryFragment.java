@@ -37,6 +37,7 @@ import com.example.mobile_memoryexplorer.MyMarker;
 import com.example.mobile_memoryexplorer.MySharedData;
 import com.example.mobile_memoryexplorer.R;
 import com.example.mobile_memoryexplorer.databinding.FragmentAddMemoryBinding;
+import com.example.mobile_memoryexplorer.ui.SingleMemory.SingleMemory;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -66,6 +67,8 @@ public class AddMemoryFragment extends Fragment {
   FirebaseDatabase database = FirebaseDatabase.getInstance();
   MySharedData mySharedData;
   String email;
+  String title;
+  String description;
   FirebaseStorage storage = FirebaseStorage.getInstance();
   Calendar calendar;
   Double lat, lon;
@@ -106,9 +109,22 @@ public class AddMemoryFragment extends Fragment {
           .addOnSuccessListener(taskSnapshot -> storage.getReference("Images/" + email + "/" + "memoriesImage/" + id)
               .getDownloadUrl().addOnSuccessListener(uri -> {
                 imageURI = uri;
-                Memory mem = new Memory(id, email, binding.title.getText().toString(), binding.description.getText().toString(), Objects.requireNonNull(binding.birthday.getText()).toString(), lat.toString(), lon.toString(), imageURI.toString(), isPublic);
-                finalMemoryRef.setValue(mem);
-                Toast.makeText(this.getContext(), "Memory added", Toast.LENGTH_SHORT).show();
+                title = binding.title.getText().toString();
+                description = binding.description.getText().toString();
+                if(!email.isEmpty() && !title.isEmpty() && !description.isEmpty()) {
+                  Memory mem = new Memory(id, email, title, description, Objects.requireNonNull(binding.birthday.getText()).toString(), lat.toString(), lon.toString(), imageURI.toString(), isPublic);
+                  finalMemoryRef.setValue(mem);
+                  Toast.makeText(this.getContext(), "Memory added", Toast.LENGTH_SHORT).show();
+                  //open new memory
+                  Intent singleMemory = new Intent(this.getContext(), SingleMemory.class);
+                  Bundle b = new Bundle();
+                  b.putString("id", id);
+                  singleMemory.putExtras(b);
+                  singleMemory.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK); // Aggiungi il flag per eliminare l'attività precedente dalla pila
+                  startActivity(singleMemory);
+                } else {
+                  Toast.makeText(this.getContext(), "Memory not added", Toast.LENGTH_SHORT).show();
+                }
                 binding.progressBar.setVisibility(View.GONE);
                 requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
               }).addOnFailureListener(e -> {
