@@ -49,11 +49,12 @@ public class Login extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    mySharedData = new MySharedData(this);
+    autoLogin();
+
     binding = ActivityLoginBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
     setupActionBar();
-
-    mySharedData = new MySharedData(this);
     setupTheme();
 
     auth = FirebaseAuth.getInstance();
@@ -63,6 +64,12 @@ public class Login extends AppCompatActivity {
     setupLoginButton();
     setupRegisterButton();
     setupRememberMeCheckbox();
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    autoLogin();
   }
 
   private void setupActionBar() {
@@ -182,7 +189,9 @@ public class Login extends AppCompatActivity {
 
   private void startHome(String email) {
     mySharedData.setSharedpreferences("email", email);
-    binding.progressBar.setVisibility(View.GONE);
+    if(binding != null) {
+      binding.progressBar.setVisibility(View.GONE);
+    }
     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     Intent homePage = new Intent(this, MainActivity.class);
     homePage.setFlags(homePage.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
@@ -202,16 +211,13 @@ public class Login extends AppCompatActivity {
     }
   }
 
-  @Override
-  protected void onResume() {
-    super.onResume();
-    if (!MySharedData.getEmail().isEmpty() || MySharedData.getRemember().equals("true")) {
-      Intent homePage = new Intent(this, MainActivity.class);
-      startActivity(homePage);
-    }
-  }
-
   boolean isEmailValid(CharSequence email) {
     return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+  }
+
+  private void autoLogin() {
+    if (!MySharedData.getEmail().isEmpty() || MySharedData.getRemember().equals("true")) {
+      startHome(MySharedData.getEmail());
+    }
   }
 }
